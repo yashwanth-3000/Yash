@@ -41,9 +41,9 @@ export const PROJECTS: Project[] = [
     name: 'Content Hub',
     description: 'Automates social media content creation for platforms like Twitter, Instagram, LinkedIn, and YouTube.',
     link: 'https://devpost.com/software/content-hub',
-    thubmnail: 'https://i.imgur.com/eIo4ZBC.png',
-    video: 'https://i.imgur.com/eIo4ZBC.png',
-    id: 'project3',
+    thubmnail: 'https://i.imgur.com/a0saTys.png',
+    video: 'https://www.youtube.com/watch?v=dtiK1DM_53M&t=41s&ab_channel=YashwanthPavushetty',
+    id: 'project2',
   },
 ];
 
@@ -57,7 +57,7 @@ export const WORK_EXPERIENCE: WorkExperience[] = [
     id: 'work1',
   },
 ]
-
+///
 export const BLOG_POSTS: BlogPost[] = [
   {
     title: 'Exploring the Intersection of Design, AI, and Design Engineering',
@@ -80,10 +80,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
     label: 'LinkedIn',
     link: 'https://www.linkedin.com/in/pyashwanthkrishna/',
   },
-  {
-    label: 'Instagram',
-    link: 'https://www.instagram.com/',
-  },
+
 ]
 
 export const EMAIL = 'pyashwanthkrishna@gmail.com'
@@ -92,6 +89,7 @@ type Hackathon = {
   date: string
   result: string
   link: string
+  thumbnail: string
   description: string
   id: string
 }
@@ -102,6 +100,7 @@ export const HACKATHONS: Hackathon[] = [
     name: 'Hypermode Knowledge Graph + AI Challenge',
     date: 'Jan 2025',
     result: 'Winner (3000$ cash prize)',
+    thumbnail : 'https://i.imgur.com/i5zGtss.png',
     link: 'https://devpost.com/software/dev-docs',
     description: 'Designed an AI-powered tool that streamlines developer workflows by providing real-time, accurate answers from  company documentation',
     id: 'hack1',
@@ -111,6 +110,7 @@ export const HACKATHONS: Hackathon[] = [
     date: 'Agust 2024',
     result: 'People Choice Award Winner',
     link: 'https://www.spaceappschallenge.org/',
+    thumbnail : 'https://i.imgur.com/q2GYo6s.png',
     description: 'Developed an AI-powered platform inspired by the James Webb Space Telescope to create personalized space exploration videos.',
     id: 'hack2',
   },
@@ -119,6 +119,7 @@ export const HACKATHONS: Hackathon[] = [
     name: 'Smart India Hackathon (SIH 2023 finale)',
     date: 'Dec 2023',
     result: '2nd Place',
+    thumbnail : '',
     link: 'https://www.linkedin.com/in/pyashwanthkrishna/details/projects/',
     description: 'Developed an automated drill core rock sample lithology logging system using YOLO algorithm.',
     id: 'hack3',
