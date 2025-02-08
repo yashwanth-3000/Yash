@@ -1,6 +1,6 @@
 'use client'
 import { motion } from 'motion/react'
-import { XIcon, PlayCircle } from 'lucide-react'
+import { XIcon, PlayCircle, Link as LinkIcon } from 'lucide-react'
 import { Spotlight } from '@/components/ui/spotlight'
 import { Magnetic } from '@/components/ui/magnetic'
 import {
@@ -10,7 +10,7 @@ import {
   MorphingDialogClose,
   MorphingDialogContainer,
 } from '@/components/ui/morphing-dialog'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { AnimatedBackground } from '@/components/ui/animated-background'
 import {
   PROJECTS,
@@ -91,9 +91,8 @@ function getYoutubeThumbnail(url: string): string {
 
 /**
  * The ProjectVideo component includes a clean hover overlay.
- * When hovering over the thumbnail, a static overlay fades in using Tailwind's
- * utility classes. The overlay now has a matching rounded border and fully covers
- * the thumbnail.
+ * When hovering over the thumbnail, the image/video fades out and the overlay
+ * (with a black background and play icon/text) remains.
  *
  * - If the project uses a YouTube video, an iframe is rendered in the modal.
  * - Otherwise, the modal displays the full-screen image.
@@ -107,13 +106,13 @@ function ProjectVideo({ src, thumbnail }: ProjectVideoProps) {
   return (
     <MorphingDialog transition={{ type: 'spring', bounce: 0, duration: 0.3 }}>
       <MorphingDialogTrigger>
-        {/* Relative container with the "group" class enables hover effects */}
-        <div className="relative group overflow-hidden rounded-xl">
+        {/* Container with "group" enables hover effects */}
+        <div className="relative group overflow-hidden rounded-2xl">
           {triggerThumbnail ? (
             <img
               src={triggerThumbnail}
               alt="Project thumbnail"
-              className="aspect-video w-full cursor-zoom-in rounded-xl"
+              className="aspect-video w-full cursor-zoom-in rounded-2xl transition-opacity duration-300 group-hover:opacity-0"
             />
           ) : (
             <video
@@ -121,11 +120,11 @@ function ProjectVideo({ src, thumbnail }: ProjectVideoProps) {
               autoPlay
               loop
               muted
-              className="aspect-video w-full cursor-zoom-in rounded-xl"
+              className="aspect-video w-full cursor-zoom-in rounded-2xl transition-opacity duration-300 group-hover:opacity-0"
             />
           )}
-          {/* Simple overlay that fades in on hover */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
+          {/* Overlay that remains visible on hover */}
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl">
             <div className="flex items-center space-x-2">
               <PlayCircle className="h-8 w-8 text-white" />
               <span className="text-white text-lg font-semibold">
@@ -136,10 +135,6 @@ function ProjectVideo({ src, thumbnail }: ProjectVideoProps) {
         </div>
       </MorphingDialogTrigger>
       <MorphingDialogContainer>
-        {/*
-          The modal overlay covers the entire viewport with a semi-transparent background.
-          The content is centered in an 85% viewport container.
-        */}
         <MorphingDialogContent className="fixed inset-0 flex items-center justify-center z-50 bg-black/80">
           <div className="w-[85vw] h-[85vh]">
             {isYoutubeVideo ? (
@@ -174,57 +169,37 @@ function ProjectVideo({ src, thumbnail }: ProjectVideoProps) {
 }
 
 /**
- * New HackathonCard component – almost identical to ProjectVideo,
- * except that it only displays an image and uses "View Details" text.
+ * The HackathonCard component has been updated so that clicking
+ * its overlay opens the hackathon website. Also, the overlay now uses a
+ * website (link) icon instead of the PlayCircle icon.
  */
 function HackathonCard({
   thumbnail,
   name,
+  link,
 }: {
   thumbnail: string
   name: string
+  link: string
 }) {
   return (
-    <MorphingDialog transition={{ type: 'spring', bounce: 0, duration: 0.3 }}>
-      <MorphingDialogTrigger>
-        <div className="relative group overflow-hidden rounded-xl">
-          <img
-            src={thumbnail}
-            alt={`${name} thumbnail`}
-            className="aspect-video w-full cursor-zoom-in rounded-xl"
-          />
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
-            <div className="flex items-center space-x-2">
-              <PlayCircle className="h-8 w-8 text-white" />
-              <span className="text-white text-lg font-semibold">
-                View Details
-              </span>
-            </div>
+    <a href={link} target="_blank" rel="noopener noreferrer">
+      <div className="relative group overflow-hidden rounded-2xl">
+        <img
+          src={thumbnail}
+          alt={`${name} thumbnail`}
+          className="aspect-video w-full cursor-zoom-in rounded-2xl transition-opacity duration-300 group-hover:opacity-0"
+        />
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl">
+          <div className="flex items-center space-x-2">
+            <LinkIcon className="h-8 w-8 text-white" />
+            <span className="text-white text-lg font-semibold">
+              View Details
+            </span>
           </div>
         </div>
-      </MorphingDialogTrigger>
-      <MorphingDialogContainer>
-        <MorphingDialogContent className="fixed inset-0 flex items-center justify-center z-50 bg-black/80">
-          <div className="w-[85vw] h-[85vh]">
-            <img
-              src={thumbnail}
-              alt={`${name} full screen preview`}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </MorphingDialogContent>
-        <MorphingDialogClose
-          className="fixed top-6 right-6 z-[100] h-fit w-fit rounded-full bg-white p-1 transition-transform duration-150 ease-in-out"
-          variants={{
-            initial: { opacity: 0 },
-            animate: { opacity: 1, transition: { delay: 0.3, duration: 0.1 } },
-            exit: { opacity: 0, transition: { duration: 0 } },
-          }}
-        >
-          <XIcon className="h-5 w-5 text-zinc-500" />
-        </MorphingDialogClose>
-      </MorphingDialogContainer>
-    </MorphingDialog>
+      </div>
+    </a>
   )
 }
 
@@ -288,7 +263,7 @@ export default function Personal() {
           </div>
         </motion.section>
 
-        {/* Hackathons Section – now using the same card design as Projects */}
+        {/* Hackathons Section */}
         <motion.section
           variants={VARIANTS_SECTION}
           transition={TRANSITION_SECTION}
@@ -305,6 +280,7 @@ export default function Personal() {
                   <HackathonCard
                     thumbnail={hackathon.thumbnail}
                     name={hackathon.name}
+                    link={hackathon.link}
                   />
                 </div>
                 <div className="px-1">
@@ -381,7 +357,7 @@ export default function Personal() {
               transition={{ type: 'spring', bounce: 0, duration: 0.2 }}
             >
               {BLOG_POSTS.map((post) => (
-                <Link
+                <NextLink
                   key={post.uid}
                   className="block rounded-xl px-4 py-4 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors duration-300"
                   href={post.link}
@@ -395,7 +371,7 @@ export default function Personal() {
                       {post.description}
                     </p>
                   </div>
-                </Link>
+                </NextLink>
               ))}
             </AnimatedBackground>
           </div>
