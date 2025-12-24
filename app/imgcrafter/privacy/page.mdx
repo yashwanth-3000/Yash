@@ -1,0 +1,109 @@
+### Privacy Notice — Img Crafter AI (Adobe Express Add-on)
+
+**Effective date:** December 24, 2025  
+**Publisher / Data Controller:** Yashwanth Krishna (independent developer) ("we", "us")  
+**Support contact:** `pyashwanthkrishna@gmail.com`
+
+This Privacy Notice explains how the Img Crafter AI Adobe Express add-on (the "Add-on") processes information when you use it inside Adobe Express.
+
+#### 1) What this covers
+
+This notice covers:
+
+- The Add-on UI running inside Adobe Express.
+- Any backend proxy used for credit/payments (and related webhooks) that the Add-on talks to.
+
+Adobe Express is provided by Adobe. Adobe's own privacy practices are governed by Adobe's policies.
+
+#### 2) What the Add-on does (why data is processed)
+
+The Add-on lets you:
+
+- Generate images from text prompts (OpenAI).
+- Edit or upscale images you upload (OpenAI).
+- Extract text (OCR) from images/documents you upload (OpenAI vision/chat).
+- Use style-reference / "mimic" workflows (OpenAI).
+- Use a credit system and purchase credits (Dodo Payments wallet + checkout).
+
+To perform these actions, the Add-on must process your prompts/images and certain identifiers needed for credits and purchases.
+
+#### 3) Information processed
+
+**A) Adobe Express user information (when available via Adobe SDK)**
+
+- A unique Adobe user identifier (often a 64‑character hash).
+- Display name (if provided).
+- Email (may be empty or not provided).
+
+**B) "Synthetic email" identifier used for credits**
+
+To associate your credit wallet with your Adobe user, the Add-on may generate an identifier that looks like an email address using your Adobe user ID (example: `<userId>@adobe-express.local`). This is used to create/find a Dodo customer record. It is not necessarily your real email, but it can still be linked to you as a user of the Add-on.
+
+**C) Payment / credit information (Dodo Payments)**
+
+- Dodo customer ID and wallet balance.
+- Credit/debit ledger entries (amount, currency, reason, idempotency keys).
+- Checkout session details (e.g., checkout link).
+- Payment events (e.g., payment ID, amount, status) received via webhook to credit wallets after a successful purchase.
+- Metadata attached to purchases (e.g., how many credits were purchased).
+
+We do **not** receive or store your full card number. Payment details are handled by Dodo Payments and its payment partners.
+
+**D) Content you provide for AI features**
+
+- Text prompts you type.
+- Images you upload for editing, upscaling, OCR, or style reference.
+- AI outputs (generated images, edited images, extracted text, analysis).
+
+**E) Technical/log data**
+
+The payment proxy/webhook system may log operational details (timestamps, endpoints, errors). The current implementation may log full payment webhook payloads for debugging, which can include transaction identifiers and purchase metadata.
+
+#### 4) How information is used
+
+We use the information to:
+
+- Provide requested features (generation, editing, upscaling, OCR, style mimic).
+- Manage credits (create/lookup customer, show balance, deduct credits, add credits after purchase).
+- Create and display checkout sessions for purchasing credits.
+- Detect issues, prevent abuse, and troubleshoot failures.
+- Provide user support (when you contact us).
+
+#### 5) Who we share information with
+
+**OpenAI (AI processing):** Prompts and images you submit for AI features are sent to OpenAI to generate results. Do not include sensitive personal information in prompts/images unless you truly need it.
+
+**Dodo Payments (credits and purchases):** We share the identifiers needed to create/lookup a customer and maintain a wallet, and we process payment events (via webhook) to add credits after successful purchases.
+
+**Infrastructure/hosting providers (proxy operations):** If the proxy is hosted (for example on a cloud platform), that provider may process logs and operational data to run the service.
+
+We do **not** sell your personal information.
+
+#### 6) Data retention
+
+- **AI prompts/images:** Processed to produce results. We do not aim to store your content long-term unless needed for support/debugging or required by law.
+- **Credits and payments:** Dodo Payments retains wallet and transaction records as needed to operate payments/credits and meet legal/financial obligations.
+- **Logs:** Operational logs may be retained for a limited time for security and debugging.
+
+#### 7) Security
+
+We use reasonable protections such as HTTPS/TLS for communications and controls to prevent duplicate wallet credits/debits (idempotency keys). No system is perfectly secure; avoid uploading highly sensitive content unless necessary.
+
+#### 8) Your choices and requests
+
+You can contact `pyashwanthkrishna@gmail.com` to request:
+
+- Access to information we control about you,
+- Deletion of data we control where feasible,
+- Help resolving credit/purchase issues.
+
+Some data (especially payment records) may need to be retained by payment providers for compliance.
+
+#### 9) Children
+
+The Add-on is not intended for children under 13 (or the minimum age required by your jurisdiction).
+
+#### 10) Updates
+
+We may update this Privacy Notice over time. The "Effective date" will change when we do.
+

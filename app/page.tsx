@@ -11,7 +11,6 @@ import {
   MorphingDialogContainer,
 } from '@/components/ui/morphing-dialog'
 import NextLink from 'next/link'
-import { AnimatedBackground } from '@/components/ui/animated-background'
 import {
   PROJECTS,
   HACKATHONS,
@@ -37,13 +36,12 @@ const VARIANTS_SECTION = {
 
 const TRANSITION_SECTION = { duration: 0.3 }
 
-// Lighter hover animation for cards to reduce lag
+// Smooth hover animation for cards
 const HOVER_CARD = {
   whileHover: {
-    scale: 1.03,
-    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
+    y: -4,
   },
-  transition: { type: 'spring', stiffness: 250, damping: 18 },
+  transition: { type: 'spring', stiffness: 300, damping: 20 },
 }
 
 type ProjectVideoProps = {
@@ -106,13 +104,13 @@ function ProjectVideo({ src, thumbnail }: ProjectVideoProps) {
   return (
     <MorphingDialog transition={{ type: 'spring', bounce: 0, duration: 0.3 }}>
       <MorphingDialogTrigger>
-        {/* Container with "group" enables hover effects */}
-        <div className="relative group overflow-hidden rounded-2xl">
+        {/* Container with smooth hover effects */}
+        <div className="relative group overflow-hidden rounded-2xl cursor-pointer">
           {triggerThumbnail ? (
             <img
               src={triggerThumbnail}
               alt="Project thumbnail"
-              className="aspect-video w-full cursor-zoom-in rounded-2xl transition-opacity duration-300 group-hover:opacity-0"
+              className="aspect-video w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
             />
           ) : (
             <video
@@ -120,15 +118,17 @@ function ProjectVideo({ src, thumbnail }: ProjectVideoProps) {
               autoPlay
               loop
               muted
-              className="aspect-video w-full cursor-zoom-in rounded-2xl transition-opacity duration-300 group-hover:opacity-0"
+              className="aspect-video w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
             />
           )}
-          {/* Overlay that remains visible on hover */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl">
-            <div className="flex items-center space-x-2">
-              <PlayCircle className="h-8 w-8 text-white" />
-              <span className="text-white text-lg font-semibold">
-                Watch the demo video
+          {/* Gradient overlay on hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+          {/* Play button that appears on hover */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="flex items-center gap-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
+              <PlayCircle className="h-5 w-5 text-zinc-900 dark:text-white" />
+              <span className="text-sm font-medium text-zinc-900 dark:text-white">
+                Watch Demo
               </span>
             </div>
           </div>
@@ -169,9 +169,7 @@ function ProjectVideo({ src, thumbnail }: ProjectVideoProps) {
 }
 
 /**
- * The HackathonCard component has been updated so that clicking
- * its overlay opens the hackathon website. Also, the overlay now uses a
- * website (link) icon instead of the PlayCircle icon.
+ * HackathonCard with smooth hover animation
  */
 function HackathonCard({
   thumbnail,
@@ -183,19 +181,21 @@ function HackathonCard({
   link: string
 }) {
   return (
-    <a href={link} target="_blank" rel="noopener noreferrer">
-      <div className="relative group overflow-hidden rounded-2xl">
+    <a href={link} target="_blank" rel="noopener noreferrer" className="block">
+      <div className="relative group overflow-hidden rounded-2xl cursor-pointer">
+        {/* Image with subtle scale on hover */}
         <img
           src={thumbnail}
           alt={`${name} thumbnail`}
-          className="aspect-video w-full cursor-zoom-in rounded-2xl transition-opacity duration-300 group-hover:opacity-0"
+          className="aspect-video w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
         />
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl">
-          <div className="flex items-center space-x-2">
-            <LinkIcon className="h-8 w-8 text-white" />
-            <span className="text-white text-lg font-semibold">
-              View Details
-            </span>
+        {/* Gradient overlay that appears on hover */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+        {/* Content that slides up on hover */}
+        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+          <div className="flex items-center gap-2 text-white">
+            <LinkIcon className="h-4 w-4" />
+            <span className="text-sm font-medium">View Project</span>
           </div>
         </div>
       </div>
@@ -246,14 +246,21 @@ export default function Personal() {
                   />
                 </div>
                 <div className="px-1">
-                  <a
-                    className="group relative inline-block text-xl font-medium text-zinc-900 dark:text-zinc-50"
-                    href={project.link}
-                    target="_blank"
-                  >
-                    {project.name}
-                    <span className="absolute bottom-0.5 left-0 block h-[1px] w-full max-w-0 bg-zinc-900 transition-all duration-200 group-hover:max-w-full"></span>
-                  </a>
+                  {project.link ? (
+                    <a
+                      className="group relative inline-block text-xl font-medium text-zinc-900 dark:text-zinc-50"
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {project.name}
+                      <span className="absolute bottom-0.5 left-0 block h-[1px] w-full max-w-0 bg-zinc-900 dark:bg-zinc-100 transition-all duration-200 group-hover:max-w-full"></span>
+                    </a>
+                  ) : (
+                    <span className="text-xl font-medium text-zinc-900 dark:text-zinc-50">
+                      {project.name}
+                    </span>
+                  )}
                   <p className="mt-2 text-base text-zinc-600 dark:text-zinc-400">
                     {project.description}
                   </p>
@@ -288,14 +295,29 @@ export default function Personal() {
                     className="group relative inline-block text-xl font-medium text-zinc-900 dark:text-zinc-50"
                     href={hackathon.link}
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {hackathon.name}
-                    <span className="absolute bottom-0.5 left-0 block h-[1px] w-full max-w-0 bg-zinc-900 transition-all duration-200 group-hover:max-w-full"></span>
+                    <span className="absolute bottom-0.5 left-0 block h-[1px] w-full max-w-0 bg-zinc-900 dark:bg-zinc-100 transition-all duration-200 group-hover:max-w-full"></span>
                   </a>
-                  <p className="mt-2 text-base text-zinc-600 dark:text-zinc-400">
-                    {hackathon.date} • {hackathon.result}
-                  </p>
-                  <p className="mt-1 text-base text-zinc-600 dark:text-zinc-400">
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+                      {hackathon.date}
+                    </span>
+                    <span className="text-zinc-300 dark:text-zinc-600">•</span>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${
+                      hackathon.result.toLowerCase().includes('winner') || hackathon.result.toLowerCase().includes('won')
+                        ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
+                        : hackathon.result.toLowerCase().includes('funded')
+                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400'
+                        : hackathon.result.toLowerCase().includes('2nd') || hackathon.result.toLowerCase().includes('place')
+                        ? 'bg-slate-100 text-slate-800 dark:bg-slate-800/50 dark:text-slate-300'
+                        : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
+                    }`}>
+                      {hackathon.result}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     {hackathon.description}
                   </p>
                 </div>
@@ -350,30 +372,40 @@ export default function Personal() {
           transition={TRANSITION_SECTION}
         >
           <h3 className="mb-5 text-2xl font-medium">Blog</h3>
-          <div className="flex flex-col space-y-4">
-            <AnimatedBackground
-              enableHover
-              className="w-full rounded-lg bg-zinc-100 dark:bg-zinc-900/80"
-              transition={{ type: 'spring', bounce: 0, duration: 0.2 }}
-            >
-              {BLOG_POSTS.map((post) => (
+          <div className="flex flex-col space-y-3">
+            {BLOG_POSTS.map((post, index) => (
+              <motion.div
+                key={post.uid}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.3 }}
+              >
                 <NextLink
-                  key={post.uid}
-                  className="block rounded-xl px-4 py-4 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors duration-300"
                   href={post.link}
-                  data-id={post.uid}
+                  className="group block relative overflow-hidden rounded-2xl bg-zinc-100/80 dark:bg-zinc-900/60 p-5 transition-all duration-300 ease-out hover:bg-zinc-200/90 dark:hover:bg-zinc-800/80 hover:scale-[1.02] hover:shadow-lg hover:shadow-zinc-200/50 dark:hover:shadow-zinc-900/50"
                 >
-                  <div className="flex flex-col space-y-1">
-                    <h4 className="font-medium dark:text-zinc-100">
-                      {post.title}
-                    </h4>
-                    <p className="text-zinc-500 dark:text-zinc-400">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-zinc-300/20 to-transparent dark:via-zinc-600/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out" />
+                  <div className="relative flex flex-col space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-700 dark:group-hover:text-white transition-colors duration-200">
+                        {post.title}
+                      </h4>
+                      <svg
+                        className="h-4 w-4 text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-200"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7v10" />
+                      </svg>
+                    </div>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors duration-200">
                       {post.description}
                     </p>
                   </div>
                 </NextLink>
-              ))}
-            </AnimatedBackground>
+              </motion.div>
+            ))}
           </div>
         </motion.section>
 
@@ -385,7 +417,10 @@ export default function Personal() {
           <h3 className="mb-5 text-2xl font-medium">Connect</h3>
           <p className="mb-5 text-lg text-zinc-600 dark:text-zinc-400">
             Feel free to contact me at{' '}
-            <a className="underline dark:text-zinc-300" href={`mailto:${EMAIL}`}>
+            <a 
+              className="text-zinc-900 dark:text-zinc-200 underline underline-offset-2 decoration-zinc-400 dark:decoration-zinc-600 hover:decoration-zinc-900 dark:hover:decoration-zinc-300 transition-colors duration-200" 
+              href={`mailto:${EMAIL}`}
+            >
               {EMAIL}
             </a>
           </p>
@@ -398,14 +433,6 @@ export default function Personal() {
           </div>
         </motion.section>
       </motion.main>
-      <style jsx>{`
-        .winning-heading {
-          transition: text-shadow 0.3s ease;
-        }
-        .group:hover .winning-heading {
-          text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-        }
-      `}</style>
     </div>
   )
 }

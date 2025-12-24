@@ -60,9 +60,15 @@ export const WORK_EXPERIENCE: WorkExperience[] = [
 ///
 export const BLOG_POSTS: BlogPost[] = [
   {
-    title: 'Exploring the Intersection of Design, AI, and Design Engineering',
-    description: 'How AI is changing the way we design',
-    link: '/blog/exploring-the-intersection-of-design-ai-and-design-engineering',
+    title: 'Img Crafter: When Adobe Believed in Our Vision',
+    description: 'We didn\'t win the hackathon but Adobe funded our project. The story of building an AI-powered add-on for Adobe Express.',
+    link: '/blog/img-crafter-adobe-addon',
+    uid: 'blog-3',
+  },
+  {
+    title: 'Building Kisan - How we used Google Cloud Run to bring AI closer to farmers',
+    description: 'Walkthrough of how Kisan was built on Google Cloud Run, covering architecture, deployment, and scalable AI access for farmers.',
+    link: 'https://medium.com/@yashwanthkrishna169/building-kisan-how-we-used-google-cloud-run-to-bring-ai-closer-to-farmers-a1255f2cdac2',
     uid: 'blog-1',
   },
 ]
@@ -96,6 +102,24 @@ type Hackathon = {
 
 export const HACKATHONS: Hackathon[] = [
 
+  {
+    name: 'Google Cloud Run Hackathon',
+    date: 'Nov 2025',
+    result: 'Submitted',
+    thumbnail: 'https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg',
+    link: 'https://devpost.com/software/kissan-p5h81u',
+    description: 'Built Kisan, an AI-powered multi-agent platform that helps farmers with crop advice, disease detection, weather insights, and government scheme guidance.',
+    id: 'hack0',
+  },
+  {
+    name: 'Adobe Express Hackathon',
+    date: 'June 2025',
+    result: 'Adobe Funded',
+    thumbnail: 'https://i.ibb.co/DgHjM2Ff/1.png',
+    link: 'https://adobesparkpost.app.link/TR9Mb7TXFLb?mode=private&claimCode=w909m3820:RJ93PPBW',
+    description: 'Built Img Crafter, an AI-powered Adobe Express add-on with Generate, Edit, and Mimic features. Didn\'t win but Adobe funded our project to completion.',
+    id: 'hack-adobe',
+  },
   {
     name: 'Hypermode Knowledge Graph + AI Challenge',
     date: 'Jan 2025',
