@@ -1,6 +1,7 @@
 'use client'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'motion/react'
-import { XIcon, PlayCircle, Link as LinkIcon } from 'lucide-react'
+import { XIcon, PlayCircle, Link as LinkIcon, Sparkles } from 'lucide-react'
 import { Spotlight } from '@/components/ui/spotlight'
 import { Magnetic } from '@/components/ui/magnetic'
 import {
@@ -13,7 +14,6 @@ import {
 import NextLink from 'next/link'
 import {
   PROJECTS,
-  HACKATHONS,
   WORK_EXPERIENCE,
   BLOG_POSTS,
   EMAIL,
@@ -25,7 +25,7 @@ const VARIANTS_CONTAINER = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.15 },
+    transition: { staggerChildren: 0.12 },
   },
 }
 
@@ -34,14 +34,17 @@ const VARIANTS_SECTION = {
   visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
 }
 
-const TRANSITION_SECTION = { duration: 0.3 }
+const TRANSITION_SECTION = { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
 
 // Smooth hover animation for cards
 const HOVER_CARD = {
-  whileHover: {
-    y: -4,
-  },
-  transition: { type: 'spring', stiffness: 300, damping: 20 },
+  whileHover: { y: -3 },
+  transition: { type: 'spring', stiffness: 400, damping: 25 },
+}
+
+// Professional, subtle spring for layout reflow
+const TRANSITION_LAYOUT = {
+  layout: { type: 'spring', stiffness: 300, damping: 30, mass: 0.8 },
 }
 
 type ProjectVideoProps = {
@@ -169,9 +172,9 @@ function ProjectVideo({ src, thumbnail }: ProjectVideoProps) {
 }
 
 /**
- * HackathonCard with smooth hover animation
+ * Project image card with smooth hover animation
  */
-function HackathonCard({
+function ProjectImageCard({
   thumbnail,
   name,
   link,
@@ -203,127 +206,374 @@ function HackathonCard({
   )
 }
 
+function TagPills({
+  tags,
+  onTagClick,
+  activeTag,
+}: {
+  tags: string[]
+  onTagClick?: (tag: string) => void
+  activeTag?: string | null
+}) {
+  if (!tags?.length) return null
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {tags.map((tag) => {
+        const active = activeTag === tag
+        return onTagClick ? (
+          <motion.button
+            key={tag}
+            type="button"
+            onClick={() => onTagClick(tag)}
+            title={`Filter by ${tag}`}
+            aria-label={`Filter projects by ${tag}`}
+            whileHover={{ y: -1, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 420, damping: 28 }}
+            className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 ${
+              active
+                ? 'cursor-pointer bg-zinc-900 text-white shadow-sm shadow-zinc-900/20 ring-1 ring-white/10 dark:bg-white dark:text-zinc-900 dark:shadow-white/10 dark:ring-zinc-900/10'
+                : 'cursor-pointer bg-zinc-100/80 text-zinc-500 hover:bg-zinc-200/80 hover:text-zinc-900 hover:ring-1 hover:ring-violet-500/25 hover:shadow-sm hover:shadow-violet-500/10 dark:bg-zinc-800/60 dark:text-zinc-400 dark:hover:bg-zinc-700/70 dark:hover:text-zinc-100 dark:hover:ring-violet-400/20'
+            }`}
+          >
+            {tag}
+          </motion.button>
+        ) : (
+          <span
+            key={tag}
+            className="inline-flex items-center rounded-md bg-zinc-100/80 px-2 py-0.5 text-[10px] font-medium text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400"
+          >
+            {tag}
+          </span>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function Personal() {
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const resultsBarRef = useRef<HTMLDivElement | null>(null)
+
+  const filteredProjects = useMemo(() => {
+    if (!selectedTag) return PROJECTS
+    return PROJECTS.filter((p) => p.tags?.includes(selectedTag))
+  }, [selectedTag])
+
+  const featuredProjects = useMemo(() => {
+    const onlyFeatured = filteredProjects.filter((p) => p.featured)
+    // Ensure consistent order for featured section
+    const order = new Map<string, number>([
+      ['project-kisan', 0],
+      ['project-dev-docs', 1],
+    ])
+    return onlyFeatured.sort(
+      (a, b) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999),
+    )
+  }, [filteredProjects])
+
+  const otherProjects = useMemo(
+    () => filteredProjects.filter((p) => !p.featured),
+    [filteredProjects],
+  )
+
+  const totalResults = filteredProjects.length
+
+  function toggleTag(tag: string) {
+    setSelectedTag((prev) => (prev === tag ? null : tag))
+  }
+
+  useEffect(() => {
+    if (!selectedTag) return
+    resultsBarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [selectedTag])
+
   return (
     <div className="container max-w-5xl mx-auto px-4 py-12">
       <motion.main
-        className="space-y-24"
+        className="space-y-20"
         variants={VARIANTS_CONTAINER}
         initial="hidden"
         animate="visible"
       >
-        {/* Intro Section */}
+        {/* Hero / Intro Section */}
         <motion.section
           variants={VARIANTS_SECTION}
           transition={TRANSITION_SECTION}
+          className="space-y-8"
         >
-          <div className="flex-1">
-            <p className="text-zinc-600 dark:text-zinc-400 text-lg">
+          {/* Tagline */}
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500/10 via-fuchsia-500/10 to-pink-500/10 dark:from-violet-500/20 dark:via-fuchsia-500/20 dark:to-pink-500/20 px-4 py-1.5 ring-1 ring-violet-500/20 dark:ring-violet-400/30">
+              <Sparkles className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" />
+              <span className="text-xs font-medium text-violet-700 dark:text-violet-300">
+                Building with AI
+              </span>
+            </div>
+            <p className="text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed max-w-2xl">
               Innovating with AI to build smarter, faster, and more efficient
               applications that automate workflows, enhance decision-making and
               transform user experiences through cutting-edge technology.
             </p>
           </div>
+
+          {/* Top filter removed — click tags on projects to filter */}
         </motion.section>
 
-        {/* Projects Section */}
+        {/* Results bar (appears after clicking a tag) */}
+        {selectedTag ? (
+          <motion.section
+            variants={VARIANTS_SECTION}
+            transition={TRANSITION_SECTION}
+            className="-mt-6"
+          >
+            <div
+              ref={resultsBarRef}
+              className="scroll-mt-28 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-zinc-200/50 bg-zinc-50/40 px-4 py-3 dark:border-zinc-800/60 dark:bg-zinc-900/30"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                  Filtered by
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedTag(null)}
+                  className="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-3 py-1 text-xs font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors"
+                >
+                  {selectedTag}
+                  <span className="text-white/50 dark:text-zinc-400">×</span>
+                </button>
+              </div>
+              <div className="flex items-center gap-3 text-xs text-zinc-400 dark:text-zinc-500">
+                <span className="tabular-nums">{totalResults} result{totalResults === 1 ? '' : 's'}</span>
+                <span className="text-zinc-200 dark:text-zinc-700">·</span>
+                <span className="tabular-nums">{featuredProjects.length} featured</span>
+                <span className="text-zinc-200 dark:text-zinc-700">·</span>
+                <span className="tabular-nums">{otherProjects.length} projects</span>
+              </div>
+            </div>
+
+            {totalResults === 0 ? (
+              <div className="mt-4 rounded-2xl border border-zinc-200/50 bg-zinc-50/40 p-5 text-sm text-zinc-600 dark:border-zinc-800/60 dark:bg-zinc-900/30 dark:text-zinc-300">
+                No projects found for{' '}
+                <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                  {selectedTag}
+                </span>
+                .{' '}
+                <button
+                  type="button"
+                  onClick={() => setSelectedTag(null)}
+                  className="font-semibold text-zinc-900 dark:text-zinc-100 underline underline-offset-4 decoration-zinc-300 dark:decoration-zinc-700 hover:decoration-zinc-500 dark:hover:decoration-zinc-400"
+                >
+                  Clear filter
+                </button>
+                .
+              </div>
+            ) : null}
+          </motion.section>
+        ) : null}
+
+         {/* Featured Projects */}
+         {featuredProjects.length ? (
+           <motion.section variants={VARIANTS_SECTION} transition={TRANSITION_SECTION}>
+             <div className="flex items-center justify-between mb-6">
+               <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                 Featured projects
+               </h3>
+             </div>
+             <motion.div
+               layout
+               transition={TRANSITION_LAYOUT}
+               className="grid grid-cols-1 gap-6 sm:grid-cols-2"
+             >
+               {featuredProjects.map((project) => (
+                 <motion.div
+                   key={project.id}
+                   layout="position"
+                   transition={TRANSITION_LAYOUT}
+                   {...HOVER_CARD}
+                   className="group/card"
+                 >
+                   <div className="space-y-3">
+                     <div className="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                       {project.video ? (
+                         <ProjectVideo src={project.video} thumbnail={project.thumbnail} />
+                       ) : (
+                         <ProjectImageCard
+                           thumbnail={project.thumbnail}
+                           name={project.name}
+                           link={project.link}
+                         />
+                       )}
+                     </div>
+                     <div className="space-y-2">
+                       <div className="flex items-start justify-between gap-3">
+                         {project.link ? (
+                           <a
+                             className="group/link relative inline-block text-base font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                             href={project.link}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                           >
+                             {project.name}
+                             <span className="absolute -bottom-0.5 left-0 block h-px w-full max-w-0 bg-current transition-all duration-300 group-hover/link:max-w-full"></span>
+                           </a>
+                         ) : (
+                           <span className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                             {project.name}
+                           </span>
+                         )}
+                       </div>
+                      <TagPills
+                        tags={project.tags}
+                        onTagClick={toggleTag}
+                        activeTag={selectedTag}
+                      />
+                       {project.date && project.result ? (
+                         <div className="flex items-center gap-2 pt-1">
+                           <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                             {project.date}
+                           </span>
+                           <span className="text-zinc-200 dark:text-zinc-700">·</span>
+                           <span
+                             className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide ${
+                               project.result.toLowerCase().includes('winner') ||
+                               project.result.toLowerCase().includes('won')
+                                 ? 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400'
+                                 : project.result.toLowerCase().includes('funded')
+                                   ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                                   : project.result.toLowerCase().includes('2nd') ||
+                                       project.result.toLowerCase().includes('place')
+                                     ? 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
+                                     : 'bg-zinc-500/10 text-zinc-600 dark:bg-zinc-500/20 dark:text-zinc-400'
+                             }`}
+                           >
+                             {project.result}
+                           </span>
+                         </div>
+                       ) : null}
+                       <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                         {project.description}
+                       </p>
+                     </div>
+                   </div>
+                 </motion.div>
+               ))}
+             </motion.div>
+           </motion.section>
+         ) : null}
+
+         {/* Projects Section */}
         <motion.section
           variants={VARIANTS_SECTION}
           transition={TRANSITION_SECTION}
         >
-          <h3 className="mb-5 text-2xl font-medium">Selected Projects</h3>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-            {PROJECTS.map((project) => (
-              <motion.div
-                key={project.name}
-                {...HOVER_CARD}
-                className="space-y-2"
-              >
-                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
-                  <ProjectVideo
-                    src={project.video}
-                    thumbnail={project.thubmnail}
-                  />
-                </div>
-                <div className="px-1">
-                  {project.link ? (
-                    <a
-                      className="group relative inline-block text-xl font-medium text-zinc-900 dark:text-zinc-50"
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {project.name}
-                      <span className="absolute bottom-0.5 left-0 block h-[1px] w-full max-w-0 bg-zinc-900 dark:bg-zinc-100 transition-all duration-200 group-hover:max-w-full"></span>
-                    </a>
-                  ) : (
-                    <span className="text-xl font-medium text-zinc-900 dark:text-zinc-50">
-                      {project.name}
-                    </span>
-                  )}
-                  <p className="mt-2 text-base text-zinc-600 dark:text-zinc-400">
-                    {project.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+           <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Projects</h3>
+             <div className="flex items-center gap-3">
+               {selectedTag ? (
+                 <button
+                   type="button"
+                   onClick={() => setSelectedTag(null)}
+                   className="text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
+                 >
+                   Showing: <span className="text-zinc-900 dark:text-zinc-100">{selectedTag}</span> · Clear
+                 </button>
+               ) : null}
+               <span className="text-sm text-zinc-400 dark:text-zinc-500">
+                 {otherProjects.length} {otherProjects.length === 1 ? 'project' : 'projects'}
+               </span>
+             </div>
           </div>
-        </motion.section>
-
-        {/* Hackathons Section */}
-        <motion.section
-          variants={VARIANTS_SECTION}
-          transition={TRANSITION_SECTION}
-        >
-          <h3 className="mb-5 text-2xl font-medium">Hackathons</h3>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-            {HACKATHONS.map((hackathon) => (
+          <motion.div
+            layout
+            transition={TRANSITION_LAYOUT}
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2"
+          >
+             {otherProjects.map((project) => (
               <motion.div
-                key={hackathon.id}
+                key={project.id}
+                layout="position"
+                transition={TRANSITION_LAYOUT}
                 {...HOVER_CARD}
-                className="space-y-2"
+                className="group/card"
               >
-                <div className="relative rounded-2xl bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
-                  <HackathonCard
-                    thumbnail={hackathon.thumbnail}
-                    name={hackathon.name}
-                    link={hackathon.link}
-                  />
-                </div>
-                <div className="px-1">
-                  <a
-                    className="group relative inline-block text-xl font-medium text-zinc-900 dark:text-zinc-50"
-                    href={hackathon.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {hackathon.name}
-                    <span className="absolute bottom-0.5 left-0 block h-[1px] w-full max-w-0 bg-zinc-900 dark:bg-zinc-100 transition-all duration-200 group-hover:max-w-full"></span>
-                  </a>
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
-                      {hackathon.date}
-                    </span>
-                    <span className="text-zinc-300 dark:text-zinc-600">•</span>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${
-                      hackathon.result.toLowerCase().includes('winner') || hackathon.result.toLowerCase().includes('won')
-                        ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
-                        : hackathon.result.toLowerCase().includes('funded')
-                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400'
-                        : hackathon.result.toLowerCase().includes('2nd') || hackathon.result.toLowerCase().includes('place')
-                        ? 'bg-slate-100 text-slate-800 dark:bg-slate-800/50 dark:text-slate-300'
-                        : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
-                    }`}>
-                      {hackathon.result}
-                    </span>
+                <div className="space-y-3">
+                  {/* Thumbnail */}
+                  <div className="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                    {project.video ? (
+                      <ProjectVideo src={project.video} thumbnail={project.thumbnail} />
+                    ) : (
+                      <ProjectImageCard
+                        thumbnail={project.thumbnail}
+                        name={project.name}
+                        link={project.link}
+                      />
+                    )}
                   </div>
-                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    {hackathon.description}
-                  </p>
+                  
+                  {/* Content */}
+                  <div className="space-y-2">
+                    {/* Title + Tags row */}
+                    <div className="flex items-start justify-between gap-3">
+                      {project.link ? (
+                        <a
+                          className="group/link relative inline-block text-base font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {project.name}
+                          <span className="absolute -bottom-0.5 left-0 block h-px w-full max-w-0 bg-current transition-all duration-300 group-hover/link:max-w-full"></span>
+                        </a>
+                      ) : (
+                        <span className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                          {project.name}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Tags */}
+                     <TagPills
+                       tags={project.tags}
+                       onTagClick={toggleTag}
+                       activeTag={selectedTag}
+                     />
+                    
+                    {/* Date + Result badge */}
+                    {project.date && project.result ? (
+                      <div className="flex items-center gap-2 pt-1">
+                        <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                          {project.date}
+                        </span>
+                        <span className="text-zinc-200 dark:text-zinc-700">·</span>
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide ${
+                            project.result.toLowerCase().includes('winner') ||
+                            project.result.toLowerCase().includes('won')
+                              ? 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400'
+                              : project.result.toLowerCase().includes('funded')
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                                : project.result.toLowerCase().includes('2nd') ||
+                                    project.result.toLowerCase().includes('place')
+                                  ? 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
+                                  : 'bg-zinc-500/10 text-zinc-600 dark:bg-zinc-500/20 dark:text-zinc-400'
+                          }`}
+                        >
+                          {project.result}
+                        </span>
+                      </div>
+                    ) : null}
+                    
+                    {/* Description */}
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                      {project.description}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </motion.section>
 
         {/* Work Experience Section */}
@@ -331,13 +581,13 @@ export default function Personal() {
           variants={VARIANTS_SECTION}
           transition={TRANSITION_SECTION}
         >
-          <h3 className="mb-5 text-2xl font-medium">Work Experience</h3>
-          <div className="flex flex-col space-y-4">
+          <h3 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-100">Experience</h3>
+          <div className="flex flex-col space-y-3">
             {WORK_EXPERIENCE.map((job) => (
               <motion.a
                 key={job.id}
                 {...HOVER_CARD}
-                className="relative overflow-hidden rounded-2xl bg-zinc-300/30 p-[1px] dark:bg-zinc-600/30"
+                className="group relative overflow-hidden rounded-xl bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
                 href={job.link}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -346,19 +596,19 @@ export default function Personal() {
                   className="from-zinc-900 via-zinc-800 to-zinc-700 blur-2xl dark:from-zinc-100 dark:via-zinc-200 dark:to-zinc-50"
                   size={64}
                 />
-                <div className="relative h-full w-full rounded-[15px] bg-white p-4 dark:bg-zinc-950">
-                  <div className="flex w-full flex-row justify-between">
-                    <div>
-                      <h4 className="font-medium dark:text-zinc-100">
+                <div className="relative p-4">
+                  <div className="flex w-full flex-row items-center justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <h4 className="font-medium text-zinc-900 dark:text-zinc-100 truncate">
                         {job.title}
                       </h4>
-                      <p className="text-zinc-500 dark:text-zinc-400">
+                      <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate">
                         {job.company}
                       </p>
                     </div>
-                    <p className="text-zinc-600 dark:text-zinc-400">
-                      {job.start} - {job.end}
-                    </p>
+                    <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500 tabular-nums">
+                      {job.start} — {job.end}
+                    </span>
                   </div>
                 </div>
               </motion.a>
@@ -371,38 +621,35 @@ export default function Personal() {
           variants={VARIANTS_SECTION}
           transition={TRANSITION_SECTION}
         >
-          <h3 className="mb-5 text-2xl font-medium">Blog</h3>
-          <div className="flex flex-col space-y-3">
+          <h3 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-100">Writing</h3>
+          <div className="flex flex-col divide-y divide-zinc-100 dark:divide-zinc-800/50">
             {BLOG_POSTS.map((post, index) => (
               <motion.div
                 key={post.uid}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.3 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: index * 0.08, duration: 0.4 }}
               >
                 <NextLink
                   href={post.link}
-                  className="group block relative overflow-hidden rounded-2xl bg-zinc-100/80 dark:bg-zinc-900/60 p-5 transition-all duration-300 ease-out hover:bg-zinc-200/90 dark:hover:bg-zinc-800/80 hover:scale-[1.02] hover:shadow-lg hover:shadow-zinc-200/50 dark:hover:shadow-zinc-900/50"
+                  className="group flex items-start justify-between gap-4 py-4 -mx-2 px-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors duration-200"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-zinc-300/20 to-transparent dark:via-zinc-600/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out" />
-                  <div className="relative flex flex-col space-y-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-700 dark:group-hover:text-white transition-colors duration-200">
-                        {post.title}
-                      </h4>
-                      <svg
-                        className="h-4 w-4 text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-200"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7v10" />
-                      </svg>
-                    </div>
-                    <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors duration-200">
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <h4 className="font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors line-clamp-1">
+                      {post.title}
+                    </h4>
+                    <p className="text-sm text-zinc-400 dark:text-zinc-500 leading-relaxed line-clamp-1">
                       {post.description}
                     </p>
                   </div>
+                  <svg
+                    className="shrink-0 h-4 w-4 mt-1 text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7v10" />
+                  </svg>
                 </NextLink>
               </motion.div>
             ))}
@@ -414,17 +661,17 @@ export default function Personal() {
           variants={VARIANTS_SECTION}
           transition={TRANSITION_SECTION}
         >
-          <h3 className="mb-5 text-2xl font-medium">Connect</h3>
-          <p className="mb-5 text-lg text-zinc-600 dark:text-zinc-400">
-            Feel free to contact me at{' '}
+          <h3 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-zinc-100">Connect</h3>
+          <p className="mb-5 text-sm text-zinc-500 dark:text-zinc-400">
+            Reach out at{' '}
             <a 
-              className="text-zinc-900 dark:text-zinc-200 underline underline-offset-2 decoration-zinc-400 dark:decoration-zinc-600 hover:decoration-zinc-900 dark:hover:decoration-zinc-300 transition-colors duration-200" 
+              className="text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 underline underline-offset-2 decoration-zinc-300 dark:decoration-zinc-600 hover:decoration-zinc-500 dark:hover:decoration-zinc-400 transition-colors" 
               href={`mailto:${EMAIL}`}
             >
               {EMAIL}
             </a>
           </p>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center flex-wrap gap-2">
             {SOCIAL_LINKS.map((link) => (
               <MagneticSocialLink key={link.label} link={link.link}>
                 {link.label}
@@ -448,23 +695,25 @@ function MagneticSocialLink({
     <Magnetic springOptions={{ bounce: 0 }} intensity={0.3}>
       <a
         href={link}
-        className="group relative inline-flex shrink-0 items-center gap-[1px] rounded-full bg-zinc-100 px-2.5 py-1 text-sm text-black transition-colors duration-200 hover:bg-zinc-950 hover:text-zinc-50 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group inline-flex items-center gap-1 rounded-full bg-zinc-100/80 px-3 py-1.5 text-xs font-medium text-zinc-600 transition-all duration-200 hover:bg-zinc-900 hover:text-white dark:bg-zinc-800/80 dark:text-zinc-400 dark:hover:bg-zinc-100 dark:hover:text-zinc-900"
       >
         {children}
         <svg
-          width="15"
-          height="15"
+          width="12"
+          height="12"
           viewBox="0 0 15 15"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="h-3 w-3"
+          className="opacity-50 group-hover:opacity-100 transition-opacity"
         >
           <path
             d="M3.64645 11.3536C3.45118 11.1583 3.45118 10.8417 3.64645 10.6465L10.2929 4L6 4C5.72386 4 5.5 3.77614 5.5 3.5C5.5 3.22386 5.72386 3 6 3L11.5 3C11.6326 3 11.7598 3.05268 11.8536 3.14645C11.9473 3.24022 12 3.36739 12 3.5L12 9.00001C12 9.27615 11.7761 9.50001 11.5 9.50001C11.2239 9.50001 11 9.27615 11 9.00001V4.70711L4.35355 11.3536C4.15829 11.5488 3.84171 11.5488 3.64645 11.3536Z"
             fill="currentColor"
             fillRule="evenodd"
             clipRule="evenodd"
-          ></path>
+          />
         </svg>
       </a>
     </Magnetic>
