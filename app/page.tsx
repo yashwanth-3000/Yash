@@ -38,8 +38,10 @@ const TRANSITION_SECTION = { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
 
 // Smooth hover animation for cards
 const HOVER_CARD = {
-  whileHover: { y: -3 },
-  transition: { type: 'spring', stiffness: 400, damping: 25 },
+  whileHover: {
+    y: -3,
+    transition: { type: 'spring', stiffness: 400, damping: 25 },
+  },
 }
 
 // Professional, subtle spring for layout reflow
