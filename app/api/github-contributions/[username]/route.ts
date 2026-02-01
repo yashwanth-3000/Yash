@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 // Revalidate every 30 minutes to keep contributions fresh throughout the day
-export const revalidate = 60 * 30 // 30 minutes
+export const revalidate = 1800
 
 type RawContribution = {
   date?: string
@@ -26,9 +26,10 @@ function pickContributions(raw: any): RawContribution[] {
 
 export async function GET(
   _req: Request,
-  { params }: { params: { username: string } },
+  { params }: { params: Promise<{ username: string }> },
 ) {
-  const username = params.username?.trim()
+  const { username: rawUsername } = await params
+  const username = rawUsername?.trim()
   if (!username) {
     return NextResponse.json({ error: 'Missing username' }, { status: 400 })
   }
@@ -44,7 +45,7 @@ export async function GET(
       'User-Agent': 'portfolio-site',
       Accept: 'application/json',
     },
-    next: { revalidate },
+    next: { revalidate: 1800 },
   })
 
   if (!res.ok) {
