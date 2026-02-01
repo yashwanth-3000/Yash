@@ -169,3 +169,5 @@ export const SOCIAL_LINKS: SocialLink[] = [
 ]
 
 export const EMAIL = 'pyashwanthkrishna@gmail.com'
+
+export const GITHUB_USERNAME = 'yashwanth-3000'

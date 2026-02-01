@@ -18,6 +18,7 @@ import {
   BLOG_POSTS,
   EMAIL,
   SOCIAL_LINKS,
+  GITHUB_USERNAME,
 } from './data'
 
 // Overall container variants for staggering children animations
@@ -578,6 +579,11 @@ export default function Personal() {
           </motion.div>
         </motion.section>
 
+        {/* GitHub Section */}
+        <motion.section variants={VARIANTS_SECTION} transition={TRANSITION_SECTION}>
+          <GitHubContributionsCard username={GITHUB_USERNAME} />
+        </motion.section>
+
         {/* Work Experience Section */}
         <motion.section
           variants={VARIANTS_SECTION}
@@ -719,5 +725,280 @@ function MagneticSocialLink({
         </svg>
       </a>
     </Magnetic>
+  )
+}
+
+type GitHubDay = {
+  date: string
+  count: number
+}
+
+type GitHubContribResponse = {
+  username: string
+  total: number
+  contributions: GitHubDay[]
+}
+
+function formatShortMonth(d: Date) {
+  return d.toLocaleString('en-US', { month: 'short' })
+}
+
+function formatLongDate(d: Date) {
+  return d.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
+function startOfWeekSunday(d: Date) {
+  const copy = new Date(d)
+  copy.setHours(0, 0, 0, 0)
+  copy.setDate(copy.getDate() - copy.getDay())
+  return copy
+}
+
+function addDays(d: Date, days: number) {
+  const copy = new Date(d)
+  copy.setDate(copy.getDate() + days)
+  return copy
+}
+
+function dayKey(d: Date) {
+  // YYYY-MM-DD
+  return d.toISOString().slice(0, 10)
+}
+
+function levelForCount(count: number, max: number) {
+  if (count <= 0 || max <= 0) return 0
+  const r = count / max
+  if (r <= 0.25) return 1
+  if (r <= 0.5) return 2
+  if (r <= 0.75) return 3
+  return 4
+}
+
+function levelClass(level: number) {
+  // Monochrome (GitHub-like intensity) in zinc scale
+  switch (level) {
+    case 0:
+      return 'bg-zinc-200/60 dark:bg-zinc-800/70'
+    case 1:
+      return 'bg-zinc-300 dark:bg-zinc-700'
+    case 2:
+      return 'bg-zinc-400 dark:bg-zinc-600'
+    case 3:
+      return 'bg-zinc-600 dark:bg-zinc-300'
+    case 4:
+      return 'bg-zinc-900 dark:bg-zinc-100'
+    default:
+      return 'bg-zinc-200/60 dark:bg-zinc-800/70'
+  }
+}
+
+function GitHubContributionsCard({ username }: { username: string }) {
+  const [data, setData] = useState<GitHubContribResponse | null>(null)
+  const [error, setError] = useState(false)
+  const isLoading = !data && !error
+
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      try {
+        setError(false)
+        const res = await fetch(`/api/github-contributions/${username}`)
+        if (!res.ok) throw new Error('failed')
+        const json = (await res.json()) as GitHubContribResponse
+        if (!cancelled) setData(json)
+      } catch {
+        if (!cancelled) setError(true)
+      }
+    }
+    load()
+    return () => {
+      cancelled = true
+    }
+  }, [username])
+
+  const { weeks, monthLabels, maxCount, total } = useMemo(() => {
+    const empty = {
+      weeks: [] as Array<{ days: Array<{ date: Date; count: number; isFuture: boolean }> }>,
+      monthLabels: [] as Array<{ label: string; colSpan: number }>,
+      maxCount: 0,
+      total: 0,
+    }
+    if (!data?.contributions?.length) return { ...empty, total: data?.total ?? 0 }
+
+    // Build lookup map from API data
+    const map = new Map<string, number>()
+    for (const d of data.contributions) {
+      map.set(d.date, d.count)
+    }
+
+    // Today
+    const today = new Date()
+    today.setHours(23, 59, 59, 999)
+
+    // Go back exactly 9 months (39 weeks)
+    const endDate = new Date(today)
+    const startDate = new Date(today)
+    startDate.setDate(startDate.getDate() - (39 * 7))
+    // Align start to Sunday
+    startDate.setDate(startDate.getDate() - startDate.getDay())
+
+    // Generate all days
+    const allDays: Array<{ date: Date; count: number; isFuture: boolean }> = []
+    let max = 0
+    let totalContribs = 0
+    
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const key = dayKey(d)
+      const count = map.get(key) ?? 0
+      const isFuture = d > today
+      allDays.push({ date: new Date(d), count, isFuture })
+      if (!isFuture) {
+        if (count > max) max = count
+        totalContribs += count
+      }
+    }
+
+    // Group into weeks (columns)
+    const grouped: typeof empty.weeks = []
+    for (let i = 0; i < allDays.length; i += 7) {
+      const weekDays = allDays.slice(i, i + 7)
+      // Pad last week if needed
+      while (weekDays.length < 7) {
+        weekDays.push({ date: new Date(), count: 0, isFuture: true })
+      }
+      grouped.push({ days: weekDays })
+    }
+
+    // Calculate month labels with column spans
+    const labels: typeof empty.monthLabels = []
+    let currentMonth = -1
+    let currentColSpan = 0
+    
+    for (let i = 0; i < grouped.length; i++) {
+      const weekMonth = grouped[i].days[0].date.getMonth()
+      if (weekMonth !== currentMonth) {
+        if (currentColSpan > 0) {
+          labels.push({
+            label: new Date(grouped[i - 1].days[0].date).toLocaleString('en-US', { month: 'short' }),
+            colSpan: currentColSpan,
+          })
+        }
+        currentMonth = weekMonth
+        currentColSpan = 1
+      } else {
+        currentColSpan++
+      }
+    }
+    // Push last month
+    if (currentColSpan > 0 && grouped.length > 0) {
+      labels.push({
+        label: grouped[grouped.length - 1].days[0].date.toLocaleString('en-US', { month: 'short' }),
+        colSpan: currentColSpan,
+      })
+    }
+
+    return {
+      weeks: grouped,
+      monthLabels: labels,
+      maxCount: max,
+      total: totalContribs,
+    }
+  }, [data])
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          {isLoading ? (
+            <span className="inline-block w-48 h-4 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" />
+          ) : error ? (
+            'Unable to load contributions'
+          ) : (
+            <>{total.toLocaleString()} contributions in the last 9 months</>
+          )}
+        </p>
+        <a
+          href={`https://github.com/${username}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors"
+        >
+          @{username}
+        </a>
+      </div>
+
+      {/* Graph container */}
+      <div className="overflow-x-auto">
+        <div className="inline-block">
+          {/* Month labels */}
+          <div className="flex text-xs text-zinc-400 dark:text-zinc-500 mb-2 pl-8">
+            {monthLabels.map((m, i) => (
+              <div
+                key={i}
+                style={{ width: m.colSpan * 13 }}
+                className="text-left"
+              >
+                {m.label}
+              </div>
+            ))}
+          </div>
+
+          {/* Grid */}
+          <div className="flex">
+            {/* Day labels */}
+            <div className="flex flex-col text-xs text-zinc-400 dark:text-zinc-500 pr-2 justify-around h-[91px]">
+              <span className="h-[13px] leading-[13px]">Mon</span>
+              <span className="h-[13px] leading-[13px]">Wed</span>
+              <span className="h-[13px] leading-[13px]">Fri</span>
+            </div>
+
+            {/* Squares */}
+            <div className="flex gap-[3px]">
+              {(isLoading ? Array(39).fill({ days: Array(7).fill({ count: 0, isFuture: false }) }) : weeks).map(
+                (week: any, wi: number) => (
+                  <div key={wi} className="flex flex-col gap-[3px]">
+                    {week.days.map((day: any, di: number) => {
+                      const level = day.isFuture ? -1 : levelForCount(day.count, maxCount)
+                      const title = !day.isFuture && day.date
+                        ? `${day.count} contribution${day.count === 1 ? '' : 's'} on ${formatLongDate(day.date)}`
+                        : ''
+                      return (
+                        <div
+                          key={di}
+                          title={title}
+                          className={`w-[10px] h-[10px] rounded-[2px] transition-all duration-200 ease-out ${
+                            day.isFuture
+                              ? 'bg-transparent'
+                              : isLoading
+                              ? 'bg-zinc-200 dark:bg-zinc-800 animate-pulse'
+                              : `${levelClass(level)} hover:scale-[1.8] hover:rounded-[3px] hover:ring-2 hover:ring-zinc-400/50 dark:hover:ring-zinc-500/50 hover:z-10 cursor-pointer`
+                          }`}
+                          style={{ transformOrigin: 'center' }}
+                        />
+                      )
+                    })}
+                  </div>
+                ),
+              )}
+            </div>
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center justify-end gap-2 mt-3 text-xs text-zinc-400 dark:text-zinc-500">
+            <span>Less</span>
+            <div className="flex gap-[3px]">
+              {[0, 1, 2, 3, 4].map((lvl) => (
+                <div
+                  key={lvl}
+                  className={`w-[10px] h-[10px] rounded-[2px] transition-transform duration-150 hover:scale-150 cursor-pointer ${levelClass(lvl)}`}
+                />
+              ))}
+            </div>
+            <span>More</span>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

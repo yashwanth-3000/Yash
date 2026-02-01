@@ -14,7 +14,48 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Yashwanth's Portfolio",
   description:
-    'A portfolio website for Yashwanth, a Genrative AI developer based in India.',
+    'Pavushetty Yashwanth Krishna - Generative AI Developer based in India. Building intelligent applications with AI, Machine Learning, RAG, and cutting-edge technology. Portfolio showcasing projects in GenAI, Computer Vision, and Full-Stack Development.',
+  keywords: [
+    'Pavushetty Yashwanth Krishna',
+    'Yashwanth Krishna',
+    'Yashwanth',
+    'Generative AI Developer',
+    'AI Developer India',
+    'Machine Learning Engineer',
+    'Full Stack Developer',
+    'GenAI',
+    'RAG',
+    'Computer Vision',
+    'LLM',
+    'Portfolio',
+  ],
+  authors: [{ name: 'Pavushetty Yashwanth Krishna' }],
+  creator: 'Pavushetty Yashwanth Krishna',
+  publisher: 'Pavushetty Yashwanth Krishna',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    title: "Pavushetty Yashwanth Krishna - Generative AI Developer",
+    description: 'Generative AI Developer building intelligent applications with AI, Machine Learning, and cutting-edge technology.',
+    siteName: "Pavushetty Yashwanth Krishna's Portfolio",
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Pavushetty Yashwanth Krishna - Generative AI Developer",
+    description: 'Generative AI Developer building intelligent applications with AI, Machine Learning, and cutting-edge technology.',
+    creator: '@yashwanth3000',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 }
 
 const geist = Geist({
@@ -35,7 +76,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geist.variable} ${geistMono.variable} bg-white tracking-tight antialiased dark:bg-zinc-950`}
+        className={`${geist.variable} ${geistMono.variable} bg-zinc-50 tracking-tight antialiased dark:bg-zinc-950`}
       >
         <ThemeProvider
           enableSystem={true}

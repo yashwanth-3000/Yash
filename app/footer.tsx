@@ -7,6 +7,11 @@ import { useEffect, useState } from 'react'
 
 const THEMES_OPTIONS = [
   {
+    label: 'Light',
+    id: 'light',
+    icon: <SunIcon className="h-4 w-4" />,
+  },
+  {
     label: 'Dark',
     id: 'dark',
     icon: <MoonIcon className="h-4 w-4" />,
@@ -32,7 +37,7 @@ function ThemeSwitch() {
 
   return (
     <AnimatedBackground
-      className="pointer-events-none rounded-lg bg-zinc-100 dark:bg-zinc-800"
+      className="pointer-events-none rounded-lg bg-zinc-200/70 dark:bg-zinc-800"
       defaultValue={theme}
       transition={{
         type: 'spring',
@@ -48,7 +53,7 @@ function ThemeSwitch() {
         return (
           <button
             key={theme.id}
-            className="inline-flex h-7 w-7 items-center justify-center text-zinc-500 transition-colors duration-100 focus-visible:outline-2 data-[checked=true]:text-zinc-950 dark:text-zinc-400 dark:data-[checked=true]:text-zinc-50"
+            className="inline-flex h-7 w-7 items-center justify-center text-zinc-500 transition-colors duration-100 focus-visible:outline-2 data-[checked=true]:text-zinc-900 dark:text-zinc-400 dark:data-[checked=true]:text-zinc-50"
             type="button"
             aria-label={`Switch to ${theme.label} theme`}
             data-id={theme.id}
@@ -63,10 +68,10 @@ function ThemeSwitch() {
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-zinc-100 px-0 py-4 dark:border-zinc-800">
+    <footer className="mt-24 border-t border-zinc-200 px-0 py-4 dark:border-zinc-800">
       <div className="flex items-center justify-between">
-        <a href="https://github.com/ibelick/nim" target="_blank">
-          <TextLoop className="text-xs text-zinc-500">
+        <a href="https://github.com/ibelick/nim" target="_blank" className="hover:opacity-70 transition-opacity">
+          <TextLoop className="text-xs text-zinc-600 dark:text-zinc-500">
             <span>Pavushetty Yashwanth Krishna.</span>
             <span>Built with Motion-Primitives.</span>
           </TextLoop>
