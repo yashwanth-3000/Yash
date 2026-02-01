@@ -795,8 +795,29 @@ function levelClass(level: number) {
 function GitHubContributionsCard({ username }: { username: string }) {
   const [data, setData] = useState<GitHubContribResponse | null>(null)
   const [error, setError] = useState(false)
+  const [containerWidth, setContainerWidth] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
   const isLoading = !data && !error
 
+  // Measure container width
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width)
+      }
+    })
+
+    observer.observe(container)
+    // Initial measurement
+    setContainerWidth(container.offsetWidth)
+
+    return () => observer.disconnect()
+  }, [])
+
+  // Fetch data
   useEffect(() => {
     let cancelled = false
     async function load() {
@@ -816,6 +837,29 @@ function GitHubContributionsCard({ username }: { username: string }) {
     }
   }, [username])
 
+  // Calculate how many weeks fit in the container
+  // Each week: 10px square + 3px gap = 13px
+  // Day labels: ~32px
+  const WEEK_WIDTH = 13
+  const DAY_LABELS_WIDTH = 32
+
+  const numWeeks = useMemo(() => {
+    if (containerWidth === 0) return 24 // Default fallback (6 months)
+    const availableWidth = containerWidth - DAY_LABELS_WIDTH
+    const maxWeeks = Math.floor(availableWidth / WEEK_WIDTH)
+    // Round down to nearest complete month (4 weeks) to ensure clean month labels
+    const completeMonths = Math.floor(maxWeeks / 4)
+    const weeks = completeMonths * 4
+    // Clamp between 12 weeks (3 months) and 48 weeks (12 months)
+    return Math.max(12, Math.min(48, weeks))
+  }, [containerWidth])
+
+  // Calculate months from weeks
+  const monthsLabel = useMemo(() => {
+    return Math.round(numWeeks / 4)
+  }, [numWeeks])
+
+  // Compute weeks data based on calculated numWeeks
   const { weeks, monthLabels, maxCount, total } = useMemo(() => {
     const empty = {
       weeks: [] as Array<{ days: Array<{ date: Date; count: number; isFuture: boolean }> }>,
@@ -835,10 +879,10 @@ function GitHubContributionsCard({ username }: { username: string }) {
     const today = new Date()
     today.setHours(23, 59, 59, 999)
 
-    // Go back exactly 9 months (39 weeks)
+    // Go back the calculated number of weeks
     const endDate = new Date(today)
     const startDate = new Date(today)
-    startDate.setDate(startDate.getDate() - (39 * 7))
+    startDate.setDate(startDate.getDate() - (numWeeks * 7))
     // Align start to Sunday
     startDate.setDate(startDate.getDate() - startDate.getDay())
 
@@ -873,23 +917,38 @@ function GitHubContributionsCard({ username }: { username: string }) {
     const labels: typeof empty.monthLabels = []
     let currentMonth = -1
     let currentColSpan = 0
+    let currentMonthDate: Date | null = null
+    let isFirstMonth = true
     
     for (let i = 0; i < grouped.length; i++) {
       const weekMonth = grouped[i].days[0].date.getMonth()
       if (weekMonth !== currentMonth) {
-        if (currentColSpan > 0) {
-          labels.push({
-            label: new Date(grouped[i - 1].days[0].date).toLocaleString('en-US', { month: 'short' }),
-            colSpan: currentColSpan,
-          })
+        if (currentColSpan > 0 && currentMonthDate) {
+          // First month: only show label if it has 3+ weeks (enough space for label)
+          // Other months: show if 2+ weeks
+          const minWeeks = isFirstMonth ? 3 : 2
+          if (currentColSpan >= minWeeks) {
+            labels.push({
+              label: currentMonthDate.toLocaleString('en-US', { month: 'short' }),
+              colSpan: currentColSpan,
+            })
+            isFirstMonth = false
+          } else {
+            // Partial month with not enough space - add empty spacer
+            labels.push({
+              label: '',
+              colSpan: currentColSpan,
+            })
+          }
         }
         currentMonth = weekMonth
+        currentMonthDate = new Date(grouped[i].days[0].date)
         currentColSpan = 1
       } else {
         currentColSpan++
       }
     }
-    // Push last month
+    // Push last month (always show it)
     if (currentColSpan > 0 && grouped.length > 0) {
       labels.push({
         label: grouped[grouped.length - 1].days[0].date.toLocaleString('en-US', { month: 'short' }),
@@ -903,100 +962,101 @@ function GitHubContributionsCard({ username }: { username: string }) {
       maxCount: max,
       total: totalContribs,
     }
-  }, [data])
+  }, [data, numWeeks])
 
   return (
-    <div>
+    <div ref={containerRef}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <div className="flex items-center justify-between gap-2 mb-4">
+        <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
           {isLoading ? (
-            <span className="inline-block w-48 h-4 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" />
+            <span className="inline-block w-32 sm:w-44 h-4 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" />
           ) : error ? (
             'Unable to load contributions'
           ) : (
-            <>{total.toLocaleString()} contributions in the last 9 months</>
+            <>{total.toLocaleString()} contributions in the last {monthsLabel} months</>
           )}
         </p>
         <a
           href={`https://github.com/${username}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors"
+          className="text-[10px] sm:text-sm text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors whitespace-nowrap shrink-0"
         >
           @{username}
         </a>
       </div>
 
-      {/* Graph container */}
-      <div className="overflow-x-auto">
-        <div className="inline-block">
-          {/* Month labels */}
-          <div className="flex text-xs text-zinc-400 dark:text-zinc-500 mb-2 pl-8">
-            {monthLabels.map((m, i) => (
+      {/* Graph - auto-sized to fit container */}
+      <div>
+        {/* Month labels */}
+        <div className="flex text-xs text-zinc-400 dark:text-zinc-500 mb-2 pl-8">
+          {(isLoading
+            ? Array(Math.ceil(numWeeks / 4)).fill(null).map((_, i) => ({ label: '', colSpan: 4 }))
+            : monthLabels
+          ).map((m, i) => (
+            <div
+              key={i}
+              style={{ width: m.colSpan * WEEK_WIDTH }}
+              className="text-left"
+            >
+              {m.label}
+            </div>
+          ))}
+        </div>
+
+        {/* Grid */}
+        <div className="flex">
+          {/* Day labels */}
+          <div className="flex flex-col text-xs text-zinc-400 dark:text-zinc-500 pr-2 justify-around h-[91px]">
+            <span className="h-[13px] leading-[13px]">Mon</span>
+            <span className="h-[13px] leading-[13px]">Wed</span>
+            <span className="h-[13px] leading-[13px]">Fri</span>
+          </div>
+
+          {/* Squares */}
+          <div className="flex gap-[3px]">
+            {(isLoading ? Array(numWeeks).fill({ days: Array(7).fill({ count: 0, isFuture: false }) }) : weeks).map(
+              (week: any, wi: number) => (
+                <div key={wi} className="flex flex-col gap-[3px]">
+                  {week.days.map((day: any, di: number) => {
+                    const level = day.isFuture ? -1 : levelForCount(day.count, maxCount)
+                    const title = !day.isFuture && day.date
+                      ? `${day.count} contribution${day.count === 1 ? '' : 's'} on ${formatLongDate(day.date)}`
+                      : ''
+                    return (
+                      <div
+                        key={di}
+                        title={title}
+                        className={`w-[10px] h-[10px] rounded-[2px] transition-all duration-200 ease-out ${
+                          day.isFuture
+                            ? 'bg-transparent'
+                            : isLoading
+                            ? 'bg-zinc-200 dark:bg-zinc-800 animate-pulse'
+                            : `${levelClass(level)} hover:scale-[1.8] hover:rounded-[3px] hover:ring-2 hover:ring-zinc-400/50 dark:hover:ring-zinc-500/50 hover:z-10 cursor-pointer`
+                        }`}
+                        style={{ transformOrigin: 'center' }}
+                      />
+                    )
+                  })}
+                </div>
+              ),
+            )}
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div className="flex items-center justify-end gap-2 mt-3 text-xs text-zinc-400 dark:text-zinc-500">
+          <span>Less</span>
+          <div className="flex gap-[3px]">
+            {[0, 1, 2, 3, 4].map((lvl) => (
               <div
-                key={i}
-                style={{ width: m.colSpan * 13 }}
-                className="text-left"
-              >
-                {m.label}
-              </div>
+                key={lvl}
+                className={`w-[10px] h-[10px] rounded-[2px] transition-transform duration-150 hover:scale-150 cursor-pointer ${levelClass(lvl)}`}
+              />
             ))}
           </div>
-
-          {/* Grid */}
-          <div className="flex">
-            {/* Day labels */}
-            <div className="flex flex-col text-xs text-zinc-400 dark:text-zinc-500 pr-2 justify-around h-[91px]">
-              <span className="h-[13px] leading-[13px]">Mon</span>
-              <span className="h-[13px] leading-[13px]">Wed</span>
-              <span className="h-[13px] leading-[13px]">Fri</span>
-            </div>
-
-            {/* Squares */}
-            <div className="flex gap-[3px]">
-              {(isLoading ? Array(39).fill({ days: Array(7).fill({ count: 0, isFuture: false }) }) : weeks).map(
-                (week: any, wi: number) => (
-                  <div key={wi} className="flex flex-col gap-[3px]">
-                    {week.days.map((day: any, di: number) => {
-                      const level = day.isFuture ? -1 : levelForCount(day.count, maxCount)
-                      const title = !day.isFuture && day.date
-                        ? `${day.count} contribution${day.count === 1 ? '' : 's'} on ${formatLongDate(day.date)}`
-                        : ''
-                      return (
-                        <div
-                          key={di}
-                          title={title}
-                          className={`w-[10px] h-[10px] rounded-[2px] transition-all duration-200 ease-out ${
-                            day.isFuture
-                              ? 'bg-transparent'
-                              : isLoading
-                              ? 'bg-zinc-200 dark:bg-zinc-800 animate-pulse'
-                              : `${levelClass(level)} hover:scale-[1.8] hover:rounded-[3px] hover:ring-2 hover:ring-zinc-400/50 dark:hover:ring-zinc-500/50 hover:z-10 cursor-pointer`
-                          }`}
-                          style={{ transformOrigin: 'center' }}
-                        />
-                      )
-                    })}
-                  </div>
-                ),
-              )}
-            </div>
-          </div>
-
-          {/* Legend */}
-          <div className="flex items-center justify-end gap-2 mt-3 text-xs text-zinc-400 dark:text-zinc-500">
-            <span>Less</span>
-            <div className="flex gap-[3px]">
-              {[0, 1, 2, 3, 4].map((lvl) => (
-                <div
-                  key={lvl}
-                  className={`w-[10px] h-[10px] rounded-[2px] transition-transform duration-150 hover:scale-150 cursor-pointer ${levelClass(lvl)}`}
-                />
-              ))}
-            </div>
-            <span>More</span>
-          </div>
+          <span>More</span>
         </div>
       </div>
     </div>
