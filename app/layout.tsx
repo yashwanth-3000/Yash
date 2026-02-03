@@ -4,6 +4,7 @@ import './globals.css'
 import { Header } from './header'
 import { Footer } from './footer'
 import { ThemeProvider } from 'next-themes'
+import { WEBSITE_URL } from '@/lib/constants'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -12,12 +13,17 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL(WEBSITE_URL),
   title: "Yashwanth's Portfolio",
   description:
     'Pavushetty Yashwanth Krishna - Generative AI Developer based in India. Building intelligent applications with AI, Machine Learning, RAG, and cutting-edge technology. Portfolio showcasing projects in GenAI, Computer Vision, and Full-Stack Development.',
+  alternates: {
+    canonical: '/',
+  },
   keywords: [
     'Pavushetty Yashwanth Krishna',
     'Yashwanth Krishna',
+    'P Yashwanth Krishna',
     'Yashwanth',
     'Generative AI Developer',
     'AI Developer India',
@@ -35,15 +41,25 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
+    url: '/',
     title: "Pavushetty Yashwanth Krishna - Generative AI Developer",
     description: 'Generative AI Developer building intelligent applications with AI, Machine Learning, and cutting-edge technology.',
     siteName: "Pavushetty Yashwanth Krishna's Portfolio",
+    images: [
+      {
+        url: '/cover.jpg',
+        width: 1200,
+        height: 630,
+        alt: "Pavushetty Yashwanth Krishna's portfolio",
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: "Pavushetty Yashwanth Krishna - Generative AI Developer",
     description: 'Generative AI Developer building intelligent applications with AI, Machine Learning, and cutting-edge technology.',
     creator: '@yashwanth3000',
+    images: ['/cover.jpg'],
   },
   robots: {
     index: true,

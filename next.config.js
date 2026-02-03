@@ -13,6 +13,9 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "i.imgur.com" },
+      { protocol: "https", hostname: "i.ibb.co" },
+      { protocol: "https", hostname: "img.youtube.com" },
+      { protocol: "https", hostname: "media.licdn.com" },
       { protocol: "https", hostname: "cdn.cosmos.so" },
     ],
   },

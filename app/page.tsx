@@ -12,6 +12,7 @@ import {
   MorphingDialogContainer,
 } from '@/components/ui/morphing-dialog'
 import NextLink from 'next/link'
+import Image from 'next/image'
 import {
   PROJECTS,
   WORK_EXPERIENCE,
@@ -113,11 +114,15 @@ function ProjectVideo({ src, thumbnail }: ProjectVideoProps) {
         {/* Container with smooth hover effects */}
         <div className="relative group overflow-hidden rounded-2xl cursor-pointer">
           {triggerThumbnail ? (
-            <img
-              src={triggerThumbnail}
-              alt="Project thumbnail"
-              className="aspect-video w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
-            />
+            <div className="relative aspect-video w-full">
+              <Image
+                src={triggerThumbnail}
+                alt="Project thumbnail"
+                fill
+                sizes="(min-width: 640px) 50vw, 100vw"
+                className="object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
+              />
+            </div>
           ) : (
             <video
               src={src}
@@ -150,12 +155,18 @@ function ProjectVideo({ src, thumbnail }: ProjectVideoProps) {
                 allowFullScreen
                 className="w-full h-full"
               />
+            ) : triggerThumbnail ? (
+              <div className="relative w-full h-full">
+                <Image
+                  src={triggerThumbnail}
+                  alt="Full screen preview"
+                  fill
+                  sizes="100vw"
+                  className="object-cover"
+                />
+              </div>
             ) : (
-              <img
-                src={triggerThumbnail}
-                alt="Full screen preview"
-                className="w-full h-full object-cover"
-              />
+              <video src={src} autoPlay loop muted className="w-full h-full object-cover" />
             )}
           </div>
         </MorphingDialogContent>
@@ -184,28 +195,47 @@ function ProjectImageCard({
 }: {
   thumbnail: string
   name: string
-  link: string
+  link?: string
 }) {
+  const hasLink = Boolean(link)
+  const Wrapper = hasLink ? 'a' : 'div'
+  const wrapperProps = hasLink
+    ? { href: link, target: '_blank', rel: 'noopener noreferrer' }
+    : {}
   return (
-    <a href={link} target="_blank" rel="noopener noreferrer" className="block">
-      <div className="relative group overflow-hidden rounded-2xl cursor-pointer">
+    <Wrapper {...wrapperProps} className="block">
+      <div
+        className={`relative group overflow-hidden rounded-2xl ${
+          hasLink ? 'cursor-pointer' : 'cursor-default'
+        }`}
+      >
         {/* Image with subtle scale on hover */}
-        <img
-          src={thumbnail}
-          alt={`${name} thumbnail`}
-          className="aspect-video w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
-        />
-        {/* Gradient overlay that appears on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-        {/* Content that slides up on hover */}
-        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
-          <div className="flex items-center gap-2 text-white">
-            <LinkIcon className="h-4 w-4" />
-            <span className="text-sm font-medium">View Project</span>
-          </div>
+        <div className="relative aspect-video w-full">
+          <Image
+            src={thumbnail}
+            alt={`${name} thumbnail`}
+            fill
+            sizes="(min-width: 640px) 50vw, 100vw"
+            className="object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
+          />
         </div>
+        {/* Gradient overlay that appears on hover */}
+        <div
+          className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent ${
+            hasLink ? 'opacity-0 group-hover:opacity-100' : 'opacity-0'
+          } transition-opacity duration-300 rounded-2xl`}
+        />
+        {/* Content that slides up on hover */}
+        {hasLink ? (
+          <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+            <div className="flex items-center gap-2 text-white">
+              <LinkIcon className="h-4 w-4" />
+              <span className="text-sm font-medium">View Project</span>
+            </div>
+          </div>
+        ) : null}
       </div>
-    </a>
+    </Wrapper>
   )
 }
 
@@ -258,6 +288,28 @@ export default function Personal() {
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
   const resultsBarRef = useRef<HTMLDivElement | null>(null)
 
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Person',
+        name: 'Pavushetty Yashwanth Krishna',
+        jobTitle: 'Generative AI Developer',
+        email: `mailto:${EMAIL}`,
+        sameAs: SOCIAL_LINKS.map((link) => link.link),
+      },
+      ...PROJECTS.map((project) => ({
+        '@type': 'CreativeWork',
+        name: project.name,
+        description: project.description,
+        ...(project.link ? { url: project.link } : {}),
+        ...(project.tags?.length
+          ? { keywords: project.tags.join(', ') }
+          : {}),
+      })),
+    ],
+  }
+
   const filteredProjects = useMemo(() => {
     if (!selectedTag) return PROJECTS
     return PROJECTS.filter((p) => p.tags?.includes(selectedTag))
@@ -293,6 +345,10 @@ export default function Personal() {
 
   return (
     <div className="container max-w-5xl mx-auto px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <motion.main
         className="space-y-20"
         variants={VARIANTS_CONTAINER}

@@ -39,7 +39,7 @@ type SocialLink = {
 export const PROJECTS: Project[] = [
   {
     name: 'Text2Story',
-    description: 'AI-driven platform that transforms textbook lessons into interactive, animated videos, enhancing childrens education.',
+    description: "AI-driven platform that transforms textbook lessons into interactive, animated videos, enhancing children's education.",
     link: '',
     video: 'https://www.youtube.com/watch?v=9PQ99JlaG0g',
     thumbnail: 'https://i.imgur.com/etkXhS0.png',
@@ -69,7 +69,6 @@ export const PROJECTS: Project[] = [
   {
     name: 'Kisan',
     date: 'Nov 2025',
-    result: '  ',
     thumbnail: 'https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg',
     link: 'https://devpost.com/software/kissan-p5h81u',
     description:
@@ -92,7 +91,7 @@ export const PROJECTS: Project[] = [
   {
     name: 'Dev Docs',
     date: 'Jan 2025',
-    result: 'Winner (3000$ cash prize)',
+    result: 'Winner ($3,000 cash prize)',
     thumbnail: 'https://i.imgur.com/6OkzN1M.png',
     link: 'https://devpost.com/software/dev-docs',
     description:
@@ -103,8 +102,8 @@ export const PROJECTS: Project[] = [
   },
   {
     name: 'NASA Space Apps Challenge 2024',
-    date: 'Agust 2024',
-    result: 'People Choice Award Winner',
+    date: 'August 2024',
+    result: "People's Choice Award Winner",
     link: 'https://www.spaceappschallenge.org/',
     thumbnail: 'https://i.imgur.com/q2GYo6s.png',
     description:
@@ -138,6 +137,13 @@ export const WORK_EXPERIENCE: WorkExperience[] = [
 ]
 ///
 export const BLOG_POSTS: BlogPost[] = [
+  {
+    title: 'Exploring the Intersection of Design, AI, and Design Engineering',
+    description:
+      'How AI is reshaping design workflows, and why design engineering bridges creativity with execution.',
+    link: '/blog/exploring-the-intersection-of-design-ai-and-design-engineering',
+    uid: 'blog-2',
+  },
   {
     title: 'Img Crafter: When Adobe Believed in Our Vision',
     description: 'We didn\'t win the hackathon but Adobe funded our project. The story of building an AI-powered add-on for Adobe Express.',
