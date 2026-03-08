@@ -1,8 +1,19 @@
 'use client'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { motion } from 'motion/react'
-import { XIcon, PlayCircle, Link as LinkIcon, Sparkles } from 'lucide-react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import {
+  XIcon,
+  PlayCircle,
+  Link as LinkIcon,
+  AlignLeft,
+  List,
+  Calendar,
+  Youtube,
+} from 'lucide-react'
+import { LinkPreview } from '@/components/ui/link-preview'
 import { Spotlight } from '@/components/ui/spotlight'
+import { Counter } from '@/components/ui/animated-counter'
+import { GlowEffect } from '@/components/ui/glow-effect'
 import { Magnetic } from '@/components/ui/magnetic'
 import {
   MorphingDialog,
@@ -51,11 +62,65 @@ const TRANSITION_LAYOUT = {
   layout: { type: 'spring', stiffness: 300, damping: 30, mass: 0.8 },
 }
 
+const VARIANTS_INTRO_CONTENT = {
+  hidden: { opacity: 0, y: 6 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.22,
+      ease: [0.22, 1, 0.36, 1],
+      staggerChildren: 0.055,
+      delayChildren: 0.02,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -4,
+    transition: {
+      duration: 0.14,
+      ease: [0.4, 0, 1, 1],
+    },
+  },
+}
+
+const VARIANTS_INTRO_LINE = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.1 },
+  },
+}
+
+function Struck({ children, strikeDelay = 0 }: { children: React.ReactNode; strikeDelay?: number }) {
+  return (
+    <motion.span
+      initial={{ opacity: 1, textDecorationColor: 'transparent' }}
+      animate={{ opacity: 0.28, textDecorationColor: '#71717a' }}
+      style={{ textDecoration: 'line-through', textDecorationThickness: '2px' }}
+      transition={{ duration: 0.45, delay: strikeDelay, ease: 'easeOut' }}
+    >
+      {children}
+    </motion.span>
+  )
+}
+
+function Highlight({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  return <>{children}</>
+}
+
 type ProjectVideoProps = {
   src: string
   /** Optional thumbnail image URL for the project. */
   thumbnail?: string
 }
+
+type IntroView = 'story' | 'tldr' | 'timeline'
 
 /**
  * Helper functions to detect YouTube URLs and generate embed/thumbnail URLs.
@@ -205,7 +270,7 @@ function ProjectImageCard({
   return (
     <Wrapper {...wrapperProps} className="block">
       <div
-        className={`relative group overflow-hidden rounded-2xl ${
+        className={`relative group overflow-hidden ${
           hasLink ? 'cursor-pointer' : 'cursor-default'
         }`}
       >
@@ -216,14 +281,14 @@ function ProjectImageCard({
             alt={`${name} thumbnail`}
             fill
             sizes="(min-width: 640px) 50vw, 100vw"
-            className="object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
+            className="object-cover scale-105 transition-transform duration-500 ease-out group-hover:scale-110"
           />
         </div>
         {/* Gradient overlay that appears on hover */}
         <div
           className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent ${
             hasLink ? 'opacity-0 group-hover:opacity-100' : 'opacity-0'
-          } transition-opacity duration-300 rounded-2xl`}
+          } transition-opacity duration-300`}
         />
         {/* Content that slides up on hover */}
         {hasLink ? (
@@ -285,8 +350,47 @@ function TagPills({
 }
 
 export default function Personal() {
+  const [introView, setIntroView] = useState<IntroView>('story')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
   const resultsBarRef = useRef<HTMLDivElement | null>(null)
+  const introTabs = [
+    { id: 'story' as const, label: 'Story', icon: AlignLeft },
+    { id: 'tldr' as const, label: 'TL;DR', icon: List },
+    { id: 'timeline' as const, label: 'Timeline', icon: Calendar },
+  ]
+  const lp = 'font-medium underline underline-offset-2 decoration-zinc-400 dark:decoration-zinc-600 hover:decoration-zinc-700 dark:hover:decoration-zinc-300 transition-colors'
+  const timelineItems: { year: string; title: string; content: React.ReactNode }[] = [
+    {
+      year: '10th Grade',
+      title: 'Creative beginnings',
+      content: <>I started helping my dad with his <LinkPreview url="https://www.youtube.com/@PavushettyYashwanth" isStatic imageSrc="https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg" className={lp}>YouTube channel</LinkPreview>, mostly editing videos and thinking about how to make content clear and engaging. Over time, the channel grew to 10K subscribers and 1M views, and today it has 30K subscribers and over 10M views.</>,
+    },
+    {
+      year: '2023',
+      title: 'Curiosity about AI',
+      content: 'When AI started booming everywhere, I got curious and began exploring it on my own, trying to understand how these systems actually worked.',
+    },
+    {
+      year: 'Hackathons',
+      title: 'Learning by building',
+      content: <>I started participating in <LinkPreview url="https://devpost.com/yashwanth-3000" isStatic imageSrc="https://i.imgur.com/6OkzN1M.png" className={lp}>hackathons</LinkPreview>, which pushed me to learn new technologies quickly and build real projects under time pressure. Along the way, I won 1st place in two international hackathons; the Hypermode Knowledge Graph + AI Challenge for building <LinkPreview url="https://devpost.com/software/dev-docs" isStatic imageSrc="https://i.imgur.com/6OkzN1M.png" className={lp}>DevDocs</LinkPreview>, and the Generative AI Hackathon with IBM Granite for <LinkPreview url="https://devpost.com/software/content-hub" isStatic imageSrc="https://i.imgur.com/eIo4ZBC.png" className={lp}>Content Hub</LinkPreview>.</>,
+    },
+    {
+      year: 'Apps & Projects',
+      title: 'Building things I want',
+      content: 'Eventually I began building my own projects and apps, mostly things I personally wished existed. Like the calendar widget app for iPhone after switching from Android.',
+    },
+    {
+      year: 'Recognition',
+      title: 'Building real tools',
+      content: <>One of my projects, <LinkPreview url="https://adobesparkpost.app.link/TR9Mb7TXFLb?addOnId=wln2g6036" isStatic imageSrc="https://i.ibb.co/DgHjM2Ff/1.png" className={lp}>Img Crafter AI</LinkPreview>, an add-on for <LinkPreview url="https://www.adobe.com/express/" isStatic imageSrc="https://i.ibb.co/DgHjM2Ff/1.png" className={lp}>Adobe Express</LinkPreview>, received a grant from Adobe, which encouraged me to keep building and experimenting with creative AI tools.</>,
+    },
+    {
+      year: 'Now',
+      title: 'Builder mindset',
+      content: 'These days I spend most of my time experimenting with Generative AI and building practical tools that people might actually find useful.',
+    },
+  ]
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -327,8 +431,13 @@ export default function Personal() {
     )
   }, [filteredProjects])
 
+  const liveProjects = useMemo(
+    () => filteredProjects.filter((p) => p.live && !p.featured),
+    [filteredProjects],
+  )
+
   const otherProjects = useMemo(
-    () => filteredProjects.filter((p) => !p.featured),
+    () => filteredProjects.filter((p) => !p.featured && !p.live),
     [filteredProjects],
   )
 
@@ -344,7 +453,7 @@ export default function Personal() {
   }, [selectedTag])
 
   return (
-    <div className="container max-w-5xl mx-auto px-4 py-12">
+    <div className="py-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -359,24 +468,151 @@ export default function Personal() {
         <motion.section
           variants={VARIANTS_SECTION}
           transition={TRANSITION_SECTION}
-          className="space-y-8"
         >
-          {/* Tagline */}
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500/10 via-fuchsia-500/10 to-pink-500/10 dark:from-violet-500/20 dark:via-fuchsia-500/20 dark:to-pink-500/20 px-4 py-1.5 ring-1 ring-violet-500/20 dark:ring-violet-400/30">
-              <Sparkles className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" />
-              <span className="text-xs font-medium text-violet-700 dark:text-violet-300">
-                Building with AI
-              </span>
+          <div className="mb-8 flex items-center justify-between">
+            {/* Profile */}
+            <div className="flex items-center gap-4">
+              <motion.div
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              >
+                <Image
+                  src="https://i.imgur.com/tdHUjkg.png"
+                  alt="Pavushetty Yashwanth Krishna"
+                  width={52}
+                  height={52}
+                  className="rounded-full"
+                  unoptimized
+                />
+              </motion.div>
+              <div>
+                <p className="font-medium text-zinc-900 dark:text-zinc-100 leading-tight">
+                  Pavushetty Yashwanth Krishna.
+                </p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  Generative AI Developer.
+                </p>
+              </div>
             </div>
-            <p className="text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed max-w-2xl">
-              Innovating with AI to build smarter, faster, and more efficient
-              applications that automate workflows, enhance decision-making and
-              transform user experiences through cutting-edge technology.
-            </p>
+
+            {/* Tabs pill */}
+            <div
+              role="tablist"
+              aria-label="About me views"
+              className="inline-flex items-center gap-1 rounded-full bg-zinc-100 p-1 dark:bg-zinc-800/80"
+            >
+              {introTabs.map((tab) => {
+                const active = introView === tab.id
+                const Icon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setIntroView(tab.id)}
+                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.75rem] font-medium transition-all duration-150 ${
+                      active
+                        ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-100'
+                        : 'text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    <Icon className="h-2.5 w-2.5" />
+                    <span>{tab.label}</span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
-          {/* Top filter removed — click tags on projects to filter */}
+          <AnimatePresence mode="wait" initial={false}>
+              {introView === 'story' ? (
+                <motion.div
+                  key="story"
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0, y: -4, transition: { duration: 0.14, ease: [0.4, 0, 1, 1] } }}
+                  className="space-y-5 text-[0.95rem] leading-[1.75] text-zinc-800 dark:text-zinc-100 sm:text-[1rem]"
+                >
+                  <p>I&apos;m a Generative AI developer who likes building things that actually get used. I spend most of my time working with models, experimenting with ideas, and figuring out how to turn &ldquo;this would be cool&rdquo; into something real and reliable.</p>
+                  <p>I love taking part in{' '}
+                    <LinkPreview url="https://devpost.com/yashwanth-3000" isStatic imageSrc="https://i.imgur.com/6OkzN1M.png" className="font-medium underline underline-offset-2 decoration-zinc-400 dark:decoration-zinc-600 hover:decoration-zinc-700 dark:hover:decoration-zinc-300 transition-colors">hackathons</LinkPreview>.
+                    {' '}They&apos;ve pushed me to switch tech stacks quickly, learn new tools on the fly, and adapt to different workflows. I think that&apos;s helped me grow a lot as a developer.</p>
+                  <p>I&apos;ve always enjoyed creating things beyond just code. In 10th grade, I started helping my dad with his{' '}
+                    <LinkPreview url="https://www.youtube.com/@PavushettyYashwanth" isStatic imageSrc="https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg" className="font-medium underline underline-offset-2 decoration-zinc-400 dark:decoration-zinc-600 hover:decoration-zinc-700 dark:hover:decoration-zinc-300 transition-colors">YouTube channel</LinkPreview>,
+                    {' '}mostly editing and thinking through content. It taught me that clarity and intention matter, whether you&apos;re making a video or building a product.</p>
+                  <p>Most of the things I build start with a personal itch. When I switched from Android to iOS, I really missed the Google Calendar widget I used every day. So instead of just complaining about it, I started building my own calendar widget app, one that brings useful widgets to iPhone.</p>
+                  <p>Most of the time, I build things I genuinely wish already existed.</p>
+                </motion.div>
+              ) : null}
+
+              {introView === 'tldr' ? (
+                <motion.div
+                  key="tldr"
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0, y: -4, transition: { duration: 0.14, ease: [0.4, 0, 1, 1] } }}
+                  className="space-y-5 text-[0.95rem] leading-[1.75] text-zinc-800 dark:text-zinc-100 sm:text-[1rem]"
+                >
+                  <p>
+                    <Highlight delay={0.0}>I&apos;m a Generative AI developer who likes building things that actually get used.</Highlight>{' '}
+                    <Struck strikeDelay={0.4}>I spend most of my time working with models, experimenting with ideas, and figuring out how to turn &ldquo;this would be cool&rdquo; into something real and reliable.</Struck>
+                  </p>
+                  <p>
+                    <Highlight delay={0.55}>I love taking part in{' '}
+                    <LinkPreview url="https://devpost.com/yashwanth-3000" isStatic imageSrc="https://i.imgur.com/6OkzN1M.png" className="font-medium underline underline-offset-2 decoration-zinc-600 hover:decoration-zinc-800 transition-colors">hackathons</LinkPreview>.</Highlight>{' '}
+                    <Highlight delay={0.75}>pushed me to switch tech stacks quickly, learn new tools on the fly, and adapt to different workflows.</Highlight>{' '}
+                    <Struck strikeDelay={1.0}>I think that&apos;s helped me grow a lot as a developer.</Struck>
+                  </p>
+                  <p>
+                    <Struck strikeDelay={1.15}>I&apos;ve always enjoyed creating things beyond just code. In 10th grade,</Struck>{' '}
+                    <Highlight delay={1.2}>started helping my dad with his{' '}
+                    <LinkPreview url="https://www.youtube.com/@PavushettyYashwanth" isStatic imageSrc="https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg" className="font-medium underline underline-offset-2 decoration-zinc-600 hover:decoration-zinc-800 transition-colors">YouTube channel</LinkPreview></Highlight>.{' '}
+                    <Struck strikeDelay={1.45}>mostly editing and thinking through content.</Struck>{' '}
+                    <Highlight delay={1.5}>It taught me that clarity and intention matter.</Highlight>{' '}
+                    <Struck strikeDelay={1.75}>whether you&apos;re making a video or building a product.</Struck>
+                  </p>
+                  <p>
+                    <Highlight delay={1.8}>Most of the things I build start with a personal itch.</Highlight>{' '}
+                    <Struck strikeDelay={2.0}>When I switched from Android to iOS, I really missed the Google Calendar widget I used every day. So instead of just complaining about it,</Struck>{' '}
+                    <Highlight delay={2.1}>I started building my own calendar widget app, one that brings useful widgets to iPhone.</Highlight>
+                  </p>
+                  <p><Highlight delay={2.4}>Most of the time, I build things I genuinely wish already existed.</Highlight></p>
+                </motion.div>
+              ) : null}
+
+              {introView === 'timeline' ? (
+                <motion.div
+                  key="timeline"
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={VARIANTS_INTRO_CONTENT}
+                  className="mt-3 max-w-[84ch]"
+                >
+                  <div className="relative">
+                    {/* line at x=6px, passing through dot centers (dot: left-[3px] to left-[10px], center=6.5px) */}
+                    <div className="absolute left-[6px] top-[0.55rem] bottom-[0.55rem] w-px bg-zinc-200 dark:bg-zinc-800" />
+                    {timelineItems.map((item, i) => (
+                      <motion.div
+                        key={item.year}
+                        variants={VARIANTS_INTRO_LINE}
+                        className="relative mb-4 last:mb-0 pl-5"
+                      >
+                        {/* dot: left-[3px], width 7px → center at 6.5px ≈ line */}
+                        <span className="absolute left-[3px] top-[0.35rem] h-[7px] w-[7px] rounded-full bg-zinc-400 dark:bg-zinc-600 ring-2 ring-zinc-50 dark:ring-zinc-950" />
+                        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-0.5">
+                          <span className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-zinc-400 dark:text-zinc-500">{item.year}</span>
+                          <span className="text-[0.82rem] font-semibold text-zinc-900 dark:text-zinc-100">{item.title}</span>
+                        </div>
+                        <p className="text-[0.8rem] leading-relaxed text-zinc-500 dark:text-zinc-400">{item.content}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              ) : null}
+          </AnimatePresence>
         </motion.section>
 
         {/* Results bar (appears after clicking a tag) */}
@@ -408,7 +644,9 @@ export default function Personal() {
                 <span className="text-zinc-200 dark:text-zinc-700">·</span>
                 <span className="tabular-nums">{featuredProjects.length} featured</span>
                 <span className="text-zinc-200 dark:text-zinc-700">·</span>
-                <span className="tabular-nums">{otherProjects.length} projects</span>
+                <span className="tabular-nums">{liveProjects.length} live projects</span>
+                <span className="text-zinc-200 dark:text-zinc-700">·</span>
+                <span className="tabular-nums">{otherProjects.length} other projects</span>
               </div>
             </div>
 
@@ -454,19 +692,29 @@ export default function Personal() {
                    className="group/card"
                  >
                    <div className="space-y-3">
-                     <div className="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
-                       {project.video ? (
-                         <ProjectVideo src={project.video} thumbnail={project.thumbnail} />
-                       ) : (
-                         <ProjectImageCard
-                           thumbnail={project.thumbnail}
-                           name={project.name}
-                           link={project.link}
-                         />
-                       )}
+                     <div className="relative rounded-xl p-[2px]">
+                       <GlowEffect
+                         colors={['#3b82f6', '#8b5cf6', '#ec4899', '#ef4444', '#3b82f6']}
+                         mode="rotate"
+                         blur="soft"
+                         duration={4}
+                         scale={1.0}
+                         className="rounded-xl opacity-60 dark:opacity-80"
+                       />
+                       <div className="relative rounded-[10px] overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                         {project.video ? (
+                           <ProjectVideo src={project.video} thumbnail={project.thumbnail} />
+                         ) : (
+                           <ProjectImageCard
+                             thumbnail={project.thumbnail}
+                             name={project.name}
+                             link={project.link}
+                           />
+                         )}
+                       </div>
                      </div>
                      <div className="space-y-2">
-                       <div className="flex items-start justify-between gap-3">
+                       <div className="flex items-center gap-2">
                          {project.link ? (
                            <a
                              className="group/link relative inline-block text-base font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
@@ -482,6 +730,12 @@ export default function Personal() {
                              {project.name}
                            </span>
                          )}
+                         {project.video && isYoutube(project.video) ? (
+                           <a href={project.video} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${project.name} on YouTube`} className="group/yt inline-flex items-center gap-1 overflow-hidden rounded-full bg-red-50 px-1.5 py-0.5 text-red-500 transition-all duration-300 hover:bg-red-100 hover:px-2.5 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20">
+                             <Youtube className="h-3.5 w-3.5 shrink-0" />
+                             <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/yt:max-w-[5rem]">Watch demo</span>
+                           </a>
+                         ) : null}
                        </div>
                       <TagPills
                         tags={project.tags}
@@ -520,7 +774,137 @@ export default function Personal() {
                ))}
              </motion.div>
            </motion.section>
+
          ) : null}
+
+         {/* Live Projects */}
+         <motion.section
+           variants={VARIANTS_SECTION}
+           transition={TRANSITION_SECTION}
+         >
+           <div className="flex items-center justify-between mb-6">
+             <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+               Live projects
+             </h3>
+             <span className="text-sm text-zinc-400 dark:text-zinc-500">
+               {liveProjects.length} {liveProjects.length === 1 ? 'project' : 'projects'}
+             </span>
+           </div>
+           {liveProjects.length ? (
+             <motion.div
+               layout
+               transition={TRANSITION_LAYOUT}
+               className="flex flex-col gap-6"
+             >
+               {liveProjects.map((project) => (
+                 <motion.div
+                   key={project.id}
+                   layout="position"
+                   transition={TRANSITION_LAYOUT}
+                   className="group/card"
+                 >
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                     {/* Left — image + meta */}
+                     <div className="space-y-2.5">
+                       <div className="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                         {project.video ? (
+                           <ProjectVideo src={project.video} thumbnail={project.thumbnail} />
+                         ) : (
+                           <ProjectImageCard thumbnail={project.thumbnail} name={project.name} link={project.link} />
+                         )}
+                       </div>
+                       {project.date && project.result ? (
+                         <div className="flex items-center gap-2">
+                           <span className="text-xs text-zinc-400 dark:text-zinc-500">{project.date}</span>
+                           <span className="text-zinc-300 dark:text-zinc-700">·</span>
+                           <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide ${
+                             project.result.toLowerCase().includes('funded')
+                               ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                               : project.result.toLowerCase().includes('winner') || project.result.toLowerCase().includes('won')
+                                 ? 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400'
+                                 : project.result.toLowerCase().includes('2nd') || project.result.toLowerCase().includes('place')
+                                   ? 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
+                                   : 'bg-zinc-500/10 text-zinc-600 dark:bg-zinc-500/20 dark:text-zinc-400'
+                           }`}>{project.result}</span>
+                         </div>
+                       ) : null}
+                       <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
+                       <div className="flex items-center gap-3 pt-0.5">
+                         {project.link ? (
+                           <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors">
+                             <LinkIcon className="h-3 w-3" />
+                             Try it
+                           </a>
+                         ) : null}
+                         {project.video && isYoutube(project.video) ? (
+                           <a href={project.video} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 transition-colors">
+                             <Youtube className="h-3 w-3" />
+                             Watch demo
+                           </a>
+                         ) : null}
+                       </div>
+                     </div>
+
+                     {/* Right — name, description, stat */}
+                     <div className="flex flex-col gap-3 pt-0.5">
+                       <div className="space-y-1.5">
+                         <div className="flex items-center gap-2">
+                           {project.link ? (
+                             <a className="group/link relative inline-block font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors" href={project.link} target="_blank" rel="noopener noreferrer">
+                               {project.name}
+                               <span className="absolute -bottom-0.5 left-0 block h-px w-full max-w-0 bg-current transition-all duration-300 group-hover/link:max-w-full" />
+                             </a>
+                           ) : (
+                             <span className="font-semibold text-zinc-900 dark:text-zinc-100">{project.name}</span>
+                           )}
+                           {project.video && isYoutube(project.video) ? (
+                             <a href={project.video} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${project.name} on YouTube`} className="group/yt inline-flex items-center gap-1 overflow-hidden rounded-full bg-red-50 px-1.5 py-0.5 text-red-500 transition-all duration-300 hover:bg-red-100 hover:px-2.5 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20">
+                               <Youtube className="h-3.5 w-3.5 shrink-0" />
+                               <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/yt:max-w-[5rem]">Watch demo</span>
+                             </a>
+                           ) : null}
+                         </div>
+                         <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">{project.description}</p>
+                       </div>
+
+                       {project.stats?.length ? (
+                         <div className="mt-auto">
+                           {project.stats.map((stat) => (
+                             <div key={stat.label} className="relative overflow-hidden rounded-xl border border-zinc-200/60 bg-zinc-50 px-4 py-3.5 dark:border-zinc-800/60 dark:bg-zinc-900">
+                                 <motion.span
+                                   className="pointer-events-none absolute -right-1 -top-2 select-none text-[4.5rem] font-black leading-none text-zinc-100 dark:text-zinc-800/60"
+                                   aria-hidden
+                                   initial={{ opacity: 0 }}
+                                   animate={{ opacity: 1 }}
+                                   transition={{ delay: 2.8, duration: 0.8, ease: 'easeIn' }}
+                                 >{stat.value}</motion.span>
+                                 <p className="mb-1.5 text-[0.65rem] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">{stat.label}</p>
+                                 <div className="flex items-end gap-1.5">
+                                   <Counter end={stat.value} duration={1.8} fontSize={24} className="text-zinc-900 dark:text-zinc-100" />
+                                   <span className="text-xs text-zinc-400 dark:text-zinc-500 pb-[5px]">and counting</span>
+                                 </div>
+                                 <div className="mt-2.5 flex items-center gap-1.5">
+                                   <span className="relative flex h-1.5 w-1.5 shrink-0">
+                                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                   </span>
+                                   <span className="text-[0.68rem] text-zinc-400 dark:text-zinc-500">live on Adobe Express</span>
+                                 </div>
+                             </div>
+                           ))}
+                         </div>
+                       ) : null}
+                     </div>
+                   </div>
+                 </motion.div>
+               ))}
+             </motion.div>
+           ) : (
+             <div className="rounded-2xl border border-zinc-200/50 bg-zinc-50/40 p-5 text-sm text-zinc-600 dark:border-zinc-800/60 dark:bg-zinc-900/30 dark:text-zinc-300">
+               No live projects yet.
+             </div>
+           )}
+         </motion.section>
 
          {/* Projects Section */}
         <motion.section
@@ -528,7 +912,7 @@ export default function Personal() {
           transition={TRANSITION_SECTION}
         >
            <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Projects</h3>
+            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Other projects</h3>
              <div className="flex items-center gap-3">
                {selectedTag ? (
                  <button
@@ -574,7 +958,7 @@ export default function Personal() {
                   {/* Content */}
                   <div className="space-y-2">
                     {/* Title + Tags row */}
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-2">
                       {project.link ? (
                         <a
                           className="group/link relative inline-block text-base font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
@@ -590,6 +974,12 @@ export default function Personal() {
                           {project.name}
                         </span>
                       )}
+                      {project.video && isYoutube(project.video) ? (
+                        <a href={project.video} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${project.name} on YouTube`} className="group/yt inline-flex items-center gap-1 overflow-hidden rounded-full bg-red-50 px-1.5 py-0.5 text-red-500 transition-all duration-300 hover:bg-red-100 hover:px-2.5 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20">
+                          <Youtube className="h-3.5 w-3.5 shrink-0" />
+                          <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/yt:max-w-[5rem]">Watch demo</span>
+                        </a>
+                      ) : null}
                     </div>
                     
                     {/* Tags */}

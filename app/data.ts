@@ -9,6 +9,10 @@ type Project = {
   tags: string[]
   /** Highlight top projects at the top of the page. */
   featured?: boolean
+  /** Display in the Live projects section. */
+  live?: boolean
+  /** Optional live stats shown on the project card. */
+  stats?: { label: string; value: number; suffix?: string }[]
   /** Optional date/result for hackathons or competitions. */
   date?: string
   result?: string
@@ -60,6 +64,7 @@ export const PROJECTS: Project[] = [
     date: 'Jan 2026',
     result: 'Best Design Winner',
     thumbnail: '/cover.jpg',
+    video: 'https://youtu.be/JIu-IRZctgY',
     link: 'https://lablab.ai/ai-hackathons/agentic-commerce-on-arc/commerce-studio/ai-merchant-studio-and-storefront',
     description:
       'USDC payments unlock AI-generated product images + video. On-chain verification gates generation and products auto-publish to a consumer storefront.',
@@ -82,10 +87,15 @@ export const PROJECTS: Project[] = [
     date: 'June 2025',
     result: 'Adobe Funded',
     thumbnail: 'https://i.ibb.co/DgHjM2Ff/1.png',
-    link: 'https://adobesparkpost.app.link/TR9Mb7TXFLb?mode=private&claimCode=w909m3820:RJ93PPBW',
+    video: 'https://youtu.be/4PMIb5cyBMk',
+    link: 'https://adobesparkpost.app.link/TR9Mb7TXFLb?addOnId=wln2g6036',
     description:
       "Built Img Crafter, an AI-powered Adobe Express add-on with Generate, Edit, and Mimic features. Didn't win but Adobe funded our project to completion.",
     tags: ['GenAI', 'Image', 'Adobe'],
+    live: true,
+    stats: [
+      { label: 'Downloads', value: 261 },
+    ],
     id: 'project-img-crafter',
   },
   {
@@ -115,8 +125,7 @@ export const PROJECTS: Project[] = [
     name: 'Smart India Hackathon (SIH 2023 finale)',
     date: 'Dec 2023',
     result: '2nd Place',
-    thumbnail:
-      'https://media.licdn.com/dms/image/v2/D562DAQH03FKX4f3wYw/profile-treasury-image-shrink_800_800/profile-treasury-image-shrink_800_800/0/1720616958782?e=1739631600&v=beta&t=36PuE-rzMnTx-cF9ZUwoUhL5UrP8hOWERTeULrKy6nw',
+    thumbnail: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=800&fit=crop',
     link: 'https://www.linkedin.com/in/pyashwanthkrishna/details/projects/',
     description:
       'Developed an automated drill core rock sample lithology logging system using YOLO algorithm.',

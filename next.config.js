@@ -17,6 +17,9 @@ const nextConfig = {
       { protocol: "https", hostname: "img.youtube.com" },
       { protocol: "https", hostname: "media.licdn.com" },
       { protocol: "https", hostname: "cdn.cosmos.so" },
+      { protocol: "https", hostname: "api.microlink.io" },
+      { protocol: "https", hostname: "**.microlink.io" },
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
 };

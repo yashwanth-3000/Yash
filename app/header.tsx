@@ -1,62 +1,51 @@
 'use client'
 import { motion } from 'framer-motion'
-import { TextEffect } from '@/components/ui/text-effect'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export function Header() {
-  const profileImageUrl = "https://i.imgur.com/tdHUjkg.png"; // Replace this with your image URL
+  const profileImageUrl = "https://i.imgur.com/tdHUjkg.png"
 
   return (
-    <>
-      {/* Header UI */}
-      <header className="mb-8 flex items-center justify-between">
+    <header className="mb-6 flex items-center">
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="flex items-center gap-3"
+      >
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center"
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
         >
-          {/* Profile Photo */}
-          <div className="relative">
-            {profileImageUrl && (  // Check if the URL is valid
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-block"
-              >
-                <Image
-                  src={profileImageUrl}  // Pass the valid image URL here
-                  alt="Profile image of Pavushetty Yashwanth Krishna"
-                  width={50}
-                  height={50}
-                  className="rounded-full"
-                  unoptimized
-                />
-              </motion.div>
-            )}
-          </div>
-
-          {/* Name and Animated Text */}
-          <div className="ml-4">
-            <Link
-              href="/"
-              className="font-medium text-black dark:text-white transition-colors duration-300 ease-in-out hover:text-blue-500 dark:hover:text-blue-400"
-            >
-              Pavushetty Yashwanth Krishna.
-            </Link>
-            <TextEffect
-              as="p"
-              preset="fade"
-              per="char"
-              className="text-zinc-500 dark:text-zinc-500"
-              delay={0.5}
-            >
-              Generative AI Developer.
-            </TextEffect>
-          </div>
+          <Image
+            src={profileImageUrl}
+            alt="Profile image of Pavushetty Yashwanth Krishna"
+            width={48}
+            height={48}
+            className="rounded-full"
+            unoptimized
+          />
         </motion.div>
-      </header>
-    </>
+
+        <div>
+          <Link
+            href="/"
+            className="font-medium text-zinc-900 dark:text-zinc-100 transition-colors hover:text-blue-500 dark:hover:text-blue-400"
+          >
+            Pavushetty Yashwanth Krishna.
+          </Link>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="text-sm text-zinc-500 dark:text-zinc-400"
+          >
+            Generative AI Developer.
+          </motion.p>
+        </div>
+      </motion.div>
+    </header>
   )
 }

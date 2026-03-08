@@ -274,7 +274,7 @@ export function TextEffect({
           onAnimationStart={onAnimationStart}
           style={style}
         >
-          {per !== 'line' ? <span className="sr-only">{children}</span> : null}
+          {per !== 'line' ? <span className="sr-only select-none">{children}</span> : null}
           {segments.map((segment, index) => (
             <AnimationComponent
               key={`${per}-${index}-${segment}`}
