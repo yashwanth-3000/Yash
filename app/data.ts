@@ -147,13 +147,6 @@ export const WORK_EXPERIENCE: WorkExperience[] = [
 ///
 export const BLOG_POSTS: BlogPost[] = [
   {
-    title: 'Exploring the Intersection of Design, AI, and Design Engineering',
-    description:
-      'How AI is reshaping design workflows, and why design engineering bridges creativity with execution.',
-    link: '/blog/exploring-the-intersection-of-design-ai-and-design-engineering',
-    uid: 'blog-2',
-  },
-  {
     title: 'Img Crafter: When Adobe Believed in Our Vision',
     description: 'We didn\'t win the hackathon but Adobe funded our project. The story of building an AI-powered add-on for Adobe Express.',
     link: '/blog/img-crafter-adobe-addon',
