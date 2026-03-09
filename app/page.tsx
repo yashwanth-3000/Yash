@@ -776,8 +776,15 @@ export default function Personal() {
            transition={TRANSITION_SECTION}
          >
            <div className="flex items-center justify-between mb-6">
-             <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
-               Live projects
+             <h3 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+               Stuff I built that{' '}
+               <span className="relative inline-block">
+                 people are actually using rn.
+                 <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                   <motion.path d="M1,5 C15,4 25,6 40,4 C55,2 65,6 80,4 C95,2 110,6 130,3 C150,1 170,6 185,4 C192,3 197,5 199,4" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.55" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}/>
+                   <motion.path d="M2,6.5 C20,5.5 45,7 75,5.5 C105,4 135,7 165,5.5 C180,5 195,6.5 199,6" stroke="currentColor" strokeWidth="0.6" fill="none" strokeLinecap="round" opacity="0.2" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.8, ease: 'easeOut', delay: 0.4 }}/>
+                 </svg>
+               </span>
              </h3>
              <span className="text-sm text-zinc-400 dark:text-zinc-500">
                {liveProjects.length} {liveProjects.length === 1 ? 'project' : 'projects'}
@@ -984,7 +991,14 @@ export default function Personal() {
           transition={TRANSITION_SECTION}
         >
            <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Other projects</h3>
+            <h3 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Stuff I built when I had an{' '}
+              <span className="relative inline-block">
+                idea and a deadline
+                <svg className="absolute -bottom-1 left-0 w-full" viewBox="0 0 200 8" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                  <motion.path d="M1,5 C15,4 25,6 40,4 C55,2 65,6 80,4 C95,2 110,6 130,3 C150,1 170,6 185,4 C192,3 197,5 199,4" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.55" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}/>
+                  <motion.path d="M2,6.5 C20,5.5 45,7 75,5.5 C105,4 135,7 165,5.5 C180,5 195,6.5 199,6" stroke="currentColor" strokeWidth="0.6" fill="none" strokeLinecap="round" opacity="0.2" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.8, ease: 'easeOut', delay: 0.4 }}/>
+                </svg>
+              </span>.</h3>
              <div className="flex items-center gap-3">
                {selectedTag ? (
                  <button
