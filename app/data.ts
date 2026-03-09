@@ -16,6 +16,8 @@ type Project = {
   /** Optional date/result for hackathons or competitions. */
   date?: string
   result?: string
+  /** Optional link to a blog post or write-up explaining how the project was built. */
+  details?: string
   id: string
 }
 
@@ -51,19 +53,33 @@ export const PROJECTS: Project[] = [
     id: 'project1',
   },
   {
-    name: 'Content Hub',
-    description: 'Automates social media content creation for platforms like Twitter, Instagram, LinkedIn, and YouTube.',
-    link: 'https://devpost.com/software/content-hub',
-    video: 'https://www.youtube.com/watch?v=dtiK1DM_53M&t=41s&ab_channel=YashwanthPavushetty',
-    thumbnail: 'https://i.imgur.com/eIo4ZBC.png',
-    tags: ['GenAI', 'Content', 'Automation'],
-    id: 'project2',
+    name: 'findr.ai',
+    date: 'Oct 2025',
+    thumbnail: 'https://i.ibb.co/wZDysrrC/Generate-Tab.jpg',
+    video: 'https://www.youtube.com/watch?v=dxQRxcknwAw',
+    link: 'https://devpost.com/software/findr-ai',
+    description:
+      'AI-powered technical hiring platform that analyzes resumes, verifies GitHub projects for authenticity, and delivers scored candidates with 0–100% suitability rankings.',
+    tags: ['GenAI', 'Multi-agent', 'CrewAI', 'Claude'],
+    id: 'project-findr-ai',
+  },
+  {
+    name: 'MakeMyCv',
+    date: 'Nov 2025',
+    result: '3rd Place',
+    thumbnail: '',
+    video: 'https://youtu.be/7CJ3GqxGJ4Q',
+    link: '',
+    description:
+      'AI-native CV builder that turns a developer\'s GitHub, LinkedIn, and X profiles into a polished, ATS-friendly resume compiled as a LaTeX PDF.',
+    tags: ['GenAI', 'Automation', 'Opus', 'No-code Workflow'],
+    id: 'project-makemycv',
   },
   {
     name: 'AI Merchant Studio & Storefront',
     date: 'Jan 2026',
     result: 'Best Design Winner',
-    thumbnail: '/cover.jpg',
+    thumbnail: 'https://img.youtube.com/vi/JIu-IRZctgY/maxresdefault.jpg',
     video: 'https://youtu.be/JIu-IRZctgY',
     link: 'https://lablab.ai/ai-hackathons/agentic-commerce-on-arc/commerce-studio/ai-merchant-studio-and-storefront',
     description:
@@ -96,6 +112,7 @@ export const PROJECTS: Project[] = [
     stats: [
       { label: 'Downloads', value: 261 },
     ],
+    details: '/blog/img-crafter-adobe-addon',
     id: 'project-img-crafter',
   },
   {

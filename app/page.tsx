@@ -9,6 +9,7 @@ import {
   List,
   Calendar,
   Youtube,
+  BookOpen,
 } from 'lucide-react'
 import { LinkPreview } from '@/components/ui/link-preview'
 import { Spotlight } from '@/components/ui/spotlight'
@@ -830,7 +831,6 @@ export default function Personal() {
                          <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide ${project.result.toLowerCase().includes('funded') ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400'}`}>{project.result}</span>
                        </div>
                      ) : null}
-                     <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
                      <div className="flex items-center gap-3">
                        {project.link ? (
                          <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors">
@@ -842,7 +842,13 @@ export default function Personal() {
                            <Youtube className="h-3 w-3" />Watch demo
                          </a>
                        ) : null}
+                       {project.details ? (
+                         <NextLink href={project.details} className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400 transition-colors">
+                           <BookOpen className="h-3 w-3" />How it's built
+                         </NextLink>
+                       ) : null}
                      </div>
+                     <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
                      {project.stats?.length ? (
                        <div>
                          {project.stats.map((stat) => (
@@ -888,7 +894,6 @@ export default function Personal() {
                            }`}>{project.result}</span>
                          </div>
                        ) : null}
-                       <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
                        <div className="flex items-center gap-3 pt-0.5">
                          {project.link ? (
                            <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors">
@@ -902,7 +907,14 @@ export default function Personal() {
                              Watch demo
                            </a>
                          ) : null}
+                         {project.details ? (
+                           <NextLink href={project.details} className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400 transition-colors">
+                             <BookOpen className="h-3 w-3" />
+                             How it's built
+                           </NextLink>
+                         ) : null}
                        </div>
+                       <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
                      </div>
 
                      {/* Right — name, description, stat */}
