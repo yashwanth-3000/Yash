@@ -11,6 +11,14 @@ import {
   Youtube,
   BookOpen,
 } from 'lucide-react'
+
+function GithubIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+    </svg>
+  )
+}
 import { LinkPreview } from '@/components/ui/link-preview'
 import { Spotlight } from '@/components/ui/spotlight'
 import { Counter } from '@/components/ui/animated-counter'
@@ -98,6 +106,7 @@ const VARIANTS_INTRO_LINE = {
   },
 }
 
+
 function Struck({ children, strikeDelay = 0, play = false }: { children: React.ReactNode; strikeDelay?: number; play?: boolean }) {
   return (
     <motion.span
@@ -119,6 +128,8 @@ type ProjectVideoProps = {
   src: string
   /** Optional thumbnail image URL for the project. */
   thumbnail?: string
+  /** Project link — if Devpost, hover shows "See Details" instead of "Watch Demo". */
+  projectLink?: string
 }
 
 type IntroView = 'story' | 'tldr' | 'timeline'
@@ -128,6 +139,10 @@ type IntroView = 'story' | 'tldr' | 'timeline'
  */
 function isYoutube(url: string): boolean {
   return url.includes('youtube.com') || url.includes('youtu.be')
+}
+
+function isGithub(url: string): boolean {
+  return url.includes('github.com')
 }
 
 function getYoutubeEmbedUrl(url: string): string {
@@ -168,47 +183,68 @@ function getYoutubeThumbnail(url: string): string {
  * - If the project uses a YouTube video, an iframe is rendered in the modal.
  * - Otherwise, the modal displays the full-screen image.
  */
-function ProjectVideo({ src, thumbnail }: ProjectVideoProps) {
+function ProjectVideo({ src, thumbnail, projectLink }: ProjectVideoProps) {
   const isYoutubeVideo = isYoutube(src)
   // Use the provided thumbnail, or derive one for YouTube if available.
   const triggerThumbnail =
     thumbnail || (isYoutubeVideo ? getYoutubeThumbnail(src) : '')
+  const isDevpost = Boolean(projectLink?.includes('devpost.com'))
+
+  const thumbnailContent = (
+    <>
+      {triggerThumbnail ? (
+        <div className="relative aspect-video w-full">
+          <Image
+            src={triggerThumbnail}
+            alt="Project thumbnail"
+            fill
+            sizes="(min-width: 640px) 50vw, 100vw"
+            className="object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
+          />
+        </div>
+      ) : (
+        <video
+          src={src}
+          autoPlay
+          loop
+          muted
+          className="aspect-video w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
+        />
+      )}
+      {/* Gradient overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+      {/* Action badge that appears on hover */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="flex items-center gap-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
+          {isDevpost ? (
+            <LinkIcon className="h-5 w-5 text-zinc-900 dark:text-white" />
+          ) : (
+            <PlayCircle className="h-5 w-5 text-zinc-900 dark:text-white" />
+          )}
+          <span className="text-sm font-medium text-zinc-900 dark:text-white">
+            {isDevpost ? 'See Details' : 'Watch Demo'}
+          </span>
+        </div>
+      </div>
+    </>
+  )
+
+  if (isDevpost && projectLink) {
+    return (
+      <NextLink href={projectLink} target="_blank" rel="noopener noreferrer">
+        <div className="relative group overflow-hidden rounded-2xl cursor-pointer">
+          {thumbnailContent}
+        </div>
+      </NextLink>
+    )
+  }
 
   return (
     <MorphingDialog transition={{ type: 'spring', bounce: 0, duration: 0.3 }}>
       <MorphingDialogTrigger>
         {/* Container with smooth hover effects */}
         <div className="relative group overflow-hidden rounded-2xl cursor-pointer">
-          {triggerThumbnail ? (
-            <div className="relative aspect-video w-full">
-              <Image
-                src={triggerThumbnail}
-                alt="Project thumbnail"
-                fill
-                sizes="(min-width: 640px) 50vw, 100vw"
-                className="object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
-              />
-            </div>
-          ) : (
-            <video
-              src={src}
-              autoPlay
-              loop
-              muted
-              className="aspect-video w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
-            />
-          )}
-          {/* Gradient overlay on hover */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-          {/* Play button that appears on hover */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="flex items-center gap-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
-              <PlayCircle className="h-5 w-5 text-zinc-900 dark:text-white" />
-              <span className="text-sm font-medium text-zinc-900 dark:text-white">
-                Watch Demo
-              </span>
-            </div>
-          </div>
+          {thumbnailContent}
         </div>
       </MorphingDialogTrigger>
       <MorphingDialogContainer>
@@ -429,7 +465,7 @@ export default function Personal() {
     const onlyFeatured = filteredProjects.filter((p) => p.featured)
     // Ensure consistent order for featured section
     const order = new Map<string, number>([
-      ['project-kisan', 0],
+      ['project-dream', 0],
       ['project-dev-docs', 1],
     ])
     return onlyFeatured.sort(
@@ -696,7 +732,7 @@ export default function Personal() {
                        />
                        <div className="relative rounded-[10px] overflow-hidden bg-zinc-100 dark:bg-zinc-900">
                          {project.video ? (
-                           <ProjectVideo src={project.video} thumbnail={project.thumbnail} />
+                           <ProjectVideo src={project.video} thumbnail={project.thumbnail} projectLink={project.link} />
                          ) : (
                            <ProjectImageCard
                              thumbnail={project.thumbnail}
@@ -727,6 +763,12 @@ export default function Personal() {
                            <a href={project.video} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${project.name} on YouTube`} className="group/yt inline-flex items-center gap-1 overflow-hidden rounded-full bg-red-50 px-1.5 py-0.5 text-red-500 transition-all duration-300 hover:bg-red-100 hover:px-2.5 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20">
                              <Youtube className="h-3.5 w-3.5 shrink-0" />
                              <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/yt:max-w-[5rem]">Watch demo</span>
+                           </a>
+                         ) : null}
+                         {(project.repo || isGithub(project.link)) ? (
+                           <a href={project.repo || project.link} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.name} on GitHub`} className="group/gh inline-flex items-center gap-1 overflow-hidden rounded-full bg-zinc-100 px-1.5 py-0.5 text-zinc-500 transition-all duration-300 hover:bg-zinc-200 hover:px-2.5 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700">
+                             <GithubIcon className="h-3.5 w-3.5 shrink-0" />
+                             <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/gh:max-w-[4rem]">GitHub</span>
                            </a>
                          ) : null}
                        </div>
@@ -807,7 +849,7 @@ export default function Personal() {
                    <div className="block sm:hidden space-y-3">
                      <div className="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
                        {project.video ? (
-                         <ProjectVideo src={project.video} thumbnail={project.thumbnail} />
+                         <ProjectVideo src={project.video} thumbnail={project.thumbnail} projectLink={project.link} />
                        ) : (
                          <ProjectImageCard thumbnail={project.thumbnail} name={project.name} link={project.link} />
                        )}
@@ -826,6 +868,12 @@ export default function Personal() {
                            <a href={project.video} target="_blank" rel="noopener noreferrer" className="group/yt inline-flex items-center gap-1 overflow-hidden rounded-full bg-red-50 px-1.5 py-0.5 text-red-500 transition-all duration-300 hover:bg-red-100 hover:px-2.5 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20">
                              <Youtube className="h-3.5 w-3.5 shrink-0" />
                              <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/yt:max-w-[5rem]">Watch demo</span>
+                           </a>
+                         ) : null}
+                         {(project.repo || isGithub(project.link)) ? (
+                           <a href={project.repo || project.link} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.name} on GitHub`} className="group/gh inline-flex items-center gap-1 overflow-hidden rounded-full bg-zinc-100 px-1.5 py-0.5 text-zinc-500 transition-all duration-300 hover:bg-zinc-200 hover:px-2.5 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700">
+                             <GithubIcon className="h-3.5 w-3.5 shrink-0" />
+                             <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/gh:max-w-[4rem]">GitHub</span>
                            </a>
                          ) : null}
                        </div>
@@ -881,7 +929,7 @@ export default function Personal() {
                      <div className="space-y-2.5">
                        <div className="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
                          {project.video ? (
-                           <ProjectVideo src={project.video} thumbnail={project.thumbnail} />
+                           <ProjectVideo src={project.video} thumbnail={project.thumbnail} projectLink={project.link} />
                          ) : (
                            <ProjectImageCard thumbnail={project.thumbnail} name={project.name} link={project.link} />
                          )}
@@ -940,6 +988,12 @@ export default function Personal() {
                              <a href={project.video} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${project.name} on YouTube`} className="group/yt inline-flex items-center gap-1 overflow-hidden rounded-full bg-red-50 px-1.5 py-0.5 text-red-500 transition-all duration-300 hover:bg-red-100 hover:px-2.5 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20">
                                <Youtube className="h-3.5 w-3.5 shrink-0" />
                                <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/yt:max-w-[5rem]">Watch demo</span>
+                             </a>
+                           ) : null}
+                           {(project.repo || isGithub(project.link)) ? (
+                             <a href={project.repo || project.link} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.name} on GitHub`} className="group/gh inline-flex items-center gap-1 overflow-hidden rounded-full bg-zinc-100 px-1.5 py-0.5 text-zinc-500 transition-all duration-300 hover:bg-zinc-200 hover:px-2.5 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700">
+                               <GithubIcon className="h-3.5 w-3.5 shrink-0" />
+                               <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/gh:max-w-[4rem]">GitHub</span>
                              </a>
                            ) : null}
                          </div>
@@ -1031,7 +1085,7 @@ export default function Personal() {
                   {/* Thumbnail */}
                   <div className="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
                     {project.video ? (
-                      <ProjectVideo src={project.video} thumbnail={project.thumbnail} />
+                      <ProjectVideo src={project.video} thumbnail={project.thumbnail} projectLink={project.link} />
                     ) : (
                       <ProjectImageCard
                         thumbnail={project.thumbnail}
@@ -1066,8 +1120,14 @@ export default function Personal() {
                           <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/yt:max-w-[5rem]">Watch demo</span>
                         </a>
                       ) : null}
+                      {(project.repo || isGithub(project.link)) ? (
+                        <a href={project.repo || project.link} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.name} on GitHub`} className="group/gh inline-flex items-center gap-1 overflow-hidden rounded-full bg-zinc-100 px-1.5 py-0.5 text-zinc-500 transition-all duration-300 hover:bg-zinc-200 hover:px-2.5 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700">
+                          <GithubIcon className="h-3.5 w-3.5 shrink-0" />
+                          <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/gh:max-w-[4rem]">GitHub</span>
+                        </a>
+                      ) : null}
                     </div>
-                    
+
                     {/* Tags */}
                      <TagPills
                        tags={project.tags}
@@ -1147,7 +1207,7 @@ export default function Personal() {
                       </p>
                     </div>
                     <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500 tabular-nums">
-                      {job.start} — {job.end}
+                      {job.start} · {job.end}
                     </span>
                   </div>
                 </div>

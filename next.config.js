@@ -20,6 +20,7 @@ const nextConfig = {
       { protocol: "https", hostname: "api.microlink.io" },
       { protocol: "https", hostname: "**.microlink.io" },
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "opengraph.githubassets.com" },
     ],
   },
 };

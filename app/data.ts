@@ -18,6 +18,8 @@ type Project = {
   result?: string
   /** Optional link to a blog post or write-up explaining how the project was built. */
   details?: string
+  /** Optional GitHub repo link shown as a GitHub icon pill. */
+  repo?: string
   id: string
 }
 
@@ -44,24 +46,26 @@ type SocialLink = {
 
 export const PROJECTS: Project[] = [
   {
-    name: 'Text2Story',
-    description: "AI-driven platform that transforms textbook lessons into interactive, animated videos, enhancing children's education.",
-    link: '',
-    video: 'https://www.youtube.com/watch?v=9PQ99JlaG0g',
-    thumbnail: 'https://i.imgur.com/etkXhS0.png',
-    tags: ['GenAI', 'Education', 'Video'],
-    id: 'project1',
+    name: 'Creator Skill Generator',
+    date: 'Mar 2026',
+    thumbnail: 'https://img.youtube.com/vi/VQdmyS9Zhng/maxresdefault.jpg',
+    video: 'https://youtu.be/VQdmyS9Zhng',
+    link: 'https://github.com/yashwanth-3000/creator-skill-generator',
+    description:
+      'Transforms creator content (Twitter/X, YouTube, pasted text) into reusable AI skill packages compatible with Codex and Claude Code, powered by a multi-step CrewAI pipeline with FastAPI backend and Next.js frontend.',
+    tags: ['GenAI', 'CrewAI', 'FastAPI', 'Claude', 'Agentic'],
+    id: 'project-creator-skill-generator',
   },
   {
-    name: 'findr.ai',
-    date: 'Oct 2025',
-    thumbnail: 'https://i.ibb.co/wZDysrrC/Generate-Tab.jpg',
-    video: 'https://www.youtube.com/watch?v=dxQRxcknwAw',
-    link: 'https://devpost.com/software/findr-ai',
+    name: 'Kisan',
+    date: 'Nov 2025',
+    thumbnail: 'https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg',
+    link: 'https://devpost.com/software/kissan-p5h81u',
+    repo: 'https://github.com/yashwanth-3000/kisan',
     description:
-      'AI-powered technical hiring platform that analyzes resumes, verifies GitHub projects for authenticity, and delivers scored candidates with 0–100% suitability rankings.',
-    tags: ['GenAI', 'Multi-agent', 'CrewAI', 'Claude'],
-    id: 'project-findr-ai',
+      'Built Kisan, an AI-powered multi-agent platform that helps farmers with crop advice, disease detection, weather insights, and government scheme guidance.',
+    tags: ['GenAI', 'Multi-agent', 'GCP'],
+    id: 'project-kisan',
   },
   {
     name: 'MakeMyCv',
@@ -70,6 +74,7 @@ export const PROJECTS: Project[] = [
     thumbnail: '',
     video: 'https://youtu.be/7CJ3GqxGJ4Q',
     link: '',
+    repo: 'https://github.com/yashwanth-3000/MakeMyCv',
     description:
       'AI-native CV builder that turns a developer\'s GitHub, LinkedIn, and X profiles into a polished, ATS-friendly resume compiled as a LaTeX PDF.',
     tags: ['GenAI', 'Automation', 'Opus', 'No-code Workflow'],
@@ -82,21 +87,35 @@ export const PROJECTS: Project[] = [
     thumbnail: 'https://img.youtube.com/vi/JIu-IRZctgY/maxresdefault.jpg',
     video: 'https://youtu.be/JIu-IRZctgY',
     link: 'https://lablab.ai/ai-hackathons/agentic-commerce-on-arc/commerce-studio/ai-merchant-studio-and-storefront',
+    repo: 'https://github.com/yashwanth-3000/arc',
     description:
       'USDC payments unlock AI-generated product images + video. On-chain verification gates generation and products auto-publish to a consumer storefront.',
     tags: ['GenAI', 'Replicate', 'Web3','Arc','Circle'],
     id: 'project-arc',
   },
   {
-    name: 'Kisan',
-    date: 'Nov 2025',
-    thumbnail: 'https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg',
-    link: 'https://devpost.com/software/kissan-p5h81u',
+    name: 'Dream',
+    date: 'Mar 2026',
+    thumbnail: 'https://img.youtube.com/vi/zXxEFVkLJ6o/maxresdefault.jpg',
+    video: 'https://youtu.be/zXxEFVkLJ6o',
+    link: 'https://github.com/yashwanth-3000/dream',
     description:
-      'Built Kisan, an AI-powered multi-agent platform that helps farmers with crop advice, disease detection, weather insights, and government scheme guidance.',
-    tags: ['GenAI', 'Multi-agent', 'GCP'],
+      'AI-powered storytelling and learning platform for children: kid-safe chat, character creation, illustrated storybook generation, and quizzes, built on Azure AI, CrewAI, and FastAPI.',
+    tags: ['GenAI', 'CrewAI', 'Azure', 'FastAPI', 'Education'],
     featured: true,
-    id: 'project-kisan',
+    id: 'project-dream',
+  },
+  {
+    name: 'findr.ai',
+    date: 'Oct 2025',
+    thumbnail: 'https://i.ibb.co/wZDysrrC/Generate-Tab.jpg',
+    video: 'https://www.youtube.com/watch?v=dxQRxcknwAw',
+    link: 'https://devpost.com/software/findr-ai',
+    repo: 'https://github.com/yashwanth-3000/findr--ai',
+    description:
+      'AI-powered technical hiring platform that analyzes resumes, verifies GitHub projects for authenticity, and delivers scored candidates with 0–100% suitability rankings.',
+    tags: ['GenAI', 'Multi-agent', 'CrewAI', 'Claude'],
+    id: 'project-findr-ai',
   },
   {
     name: 'Adobe Express Hackathon',
@@ -112,6 +131,7 @@ export const PROJECTS: Project[] = [
     stats: [
       { label: 'Downloads', value: 261 },
     ],
+    repo: 'https://github.com/yashwanth-3000/img-crafter',
     details: '/blog/img-crafter-adobe-addon',
     id: 'project-img-crafter',
   },
@@ -121,6 +141,7 @@ export const PROJECTS: Project[] = [
     result: 'Winner ($3,000 cash prize)',
     thumbnail: 'https://i.imgur.com/6OkzN1M.png',
     link: 'https://devpost.com/software/dev-docs',
+    repo: 'https://github.com/yashwanth-3000/Dev-Docs-Local',
     description:
       'Designed an AI-powered tool that streamlines developer workflows by providing real-time, accurate answers from company documentation',
     tags: ['RAG', 'Knowledge Graph', 'GenAI'],
@@ -137,6 +158,15 @@ export const PROJECTS: Project[] = [
       'Developed an AI-powered platform inspired by the James Webb Space Telescope to create personalized space exploration videos.',
     tags: ['GenAI', 'Video', 'Personalization'],
     id: 'project-nasa',
+  },
+  {
+    name: 'Text2Story',
+    description: "AI-driven platform that transforms textbook lessons into interactive, animated videos, enhancing children's education.",
+    link: '',
+    video: 'https://www.youtube.com/watch?v=9PQ99JlaG0g',
+    thumbnail: 'https://i.imgur.com/etkXhS0.png',
+    tags: ['GenAI', 'Education', 'Video'],
+    id: 'project1',
   },
   {
     name: 'Smart India Hackathon (SIH 2023 finale)',
