@@ -24,6 +24,7 @@ import { Spotlight } from '@/components/ui/spotlight'
 import { Counter } from '@/components/ui/animated-counter'
 import { GlowEffect } from '@/components/ui/glow-effect'
 import { Magnetic } from '@/components/ui/magnetic'
+import { CustomersStats } from '@/components/customers-stats'
 import {
   MorphingDialog,
   MorphingDialogTrigger,
@@ -904,24 +905,11 @@ export default function Personal() {
                        ) : null}
                      </div>
                      <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
-                     {project.stats?.length ? (
-                       <div>
-                         {project.stats.map((stat) => (
-                           <div key={stat.label} className="relative overflow-hidden rounded-xl border border-zinc-200/60 bg-zinc-50 px-4 py-3.5 dark:border-zinc-800/60 dark:bg-zinc-900">
-                             <motion.span className="pointer-events-none absolute -right-1 -top-2 select-none text-[4.5rem] font-black leading-none text-zinc-100 dark:text-zinc-800/60" aria-hidden initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.8, duration: 0.8, ease: 'easeIn' }}>{stat.value}</motion.span>
-                             <p className="mb-1.5 text-[0.65rem] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">{stat.label}</p>
-                             <div className="flex items-end gap-1.5">
-                               <Counter end={stat.value} duration={1.8} fontSize={24} className="text-zinc-900 dark:text-zinc-100" />
-                               <span className="text-xs text-zinc-400 dark:text-zinc-500 pb-[5px]">and counting</span>
-                             </div>
-                             <div className="mt-2.5 flex items-center gap-1.5">
-                               <span className="relative flex h-1.5 w-1.5 shrink-0"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" /></span>
-                               <span className="text-[0.68rem] text-zinc-400 dark:text-zinc-500">live on Adobe Express</span>
-                             </div>
-                           </div>
-                         ))}
-                       </div>
-                     ) : null}
+                    {project.id === 'project-img-crafter' && (
+                      <div className="space-y-3">
+                        <CustomersStats />
+                      </div>
+                    )}
                    </div>
 
                    {/* Desktop: two-column grid */}
@@ -1000,33 +988,11 @@ export default function Personal() {
                          <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">{project.description}</p>
                        </div>
 
-                       {project.stats?.length ? (
-                         <div className="mt-auto">
-                           {project.stats.map((stat) => (
-                             <div key={stat.label} className="relative overflow-hidden rounded-xl border border-zinc-200/60 bg-zinc-50 px-4 py-3.5 dark:border-zinc-800/60 dark:bg-zinc-900">
-                                 <motion.span
-                                   className="pointer-events-none absolute -right-1 -top-2 select-none text-[4.5rem] font-black leading-none text-zinc-100 dark:text-zinc-800/60"
-                                   aria-hidden
-                                   initial={{ opacity: 0 }}
-                                   animate={{ opacity: 1 }}
-                                   transition={{ delay: 2.8, duration: 0.8, ease: 'easeIn' }}
-                                 >{stat.value}</motion.span>
-                                 <p className="mb-1.5 text-[0.65rem] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">{stat.label}</p>
-                                 <div className="flex items-end gap-1.5">
-                                   <Counter end={stat.value} duration={1.8} fontSize={24} className="text-zinc-900 dark:text-zinc-100" />
-                                   <span className="text-xs text-zinc-400 dark:text-zinc-500 pb-[5px]">and counting</span>
-                                 </div>
-                                 <div className="mt-2.5 flex items-center gap-1.5">
-                                   <span className="relative flex h-1.5 w-1.5 shrink-0">
-                                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                   </span>
-                                   <span className="text-[0.68rem] text-zinc-400 dark:text-zinc-500">live on Adobe Express</span>
-                                 </div>
-                             </div>
-                           ))}
-                         </div>
-                       ) : null}
+                      {project.id === 'project-img-crafter' && (
+                        <div className="mt-auto">
+                          <CustomersStats />
+                        </div>
+                      )}
                      </div>
                    </div>{/* end desktop grid */}
                  </motion.div>

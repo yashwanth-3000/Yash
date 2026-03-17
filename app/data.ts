@@ -128,9 +128,6 @@ export const PROJECTS: Project[] = [
       "Built Img Crafter, an AI-powered Adobe Express add-on with Generate, Edit, and Mimic features. Didn't win but Adobe funded our project to completion.",
     tags: ['GenAI', 'Image', 'Adobe'],
     live: true,
-    stats: [
-      { label: 'Downloads', value: 261 },
-    ],
     repo: 'https://github.com/yashwanth-3000/img-crafter',
     details: '/blog/img-crafter-adobe-addon',
     id: 'project-img-crafter',
