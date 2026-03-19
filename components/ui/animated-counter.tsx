@@ -40,7 +40,7 @@ export const Counter = ({
   }, [])
 
   useEffect(() => {
-    if (!started) return
+    if (!started || !end) return
     const steps = end
     const intervalMs = (duration * 1000) / steps
     const interval = setInterval(() => {

@@ -200,7 +200,7 @@ function ProjectVideo({ src, thumbnail, projectLink }: ProjectVideoProps) {
             alt="Project thumbnail"
             fill
             sizes="(min-width: 640px) 50vw, 100vw"
-            className="object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           />
         </div>
       ) : (
@@ -209,11 +209,11 @@ function ProjectVideo({ src, thumbnail, projectLink }: ProjectVideoProps) {
           autoPlay
           loop
           muted
-          className="aspect-video w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
+          className="aspect-video w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
       )}
       {/* Gradient overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       {/* Action badge that appears on hover */}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <div className="flex items-center gap-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
@@ -233,7 +233,7 @@ function ProjectVideo({ src, thumbnail, projectLink }: ProjectVideoProps) {
   if (isDevpost && projectLink) {
     return (
       <NextLink href={projectLink} target="_blank" rel="noopener noreferrer">
-        <div className="relative group overflow-hidden rounded-2xl cursor-pointer">
+        <div className="relative group overflow-hidden rounded-lg cursor-pointer">
           {thumbnailContent}
         </div>
       </NextLink>
@@ -244,7 +244,7 @@ function ProjectVideo({ src, thumbnail, projectLink }: ProjectVideoProps) {
     <MorphingDialog transition={{ type: 'spring', bounce: 0, duration: 0.3 }}>
       <MorphingDialogTrigger>
         {/* Container with smooth hover effects */}
-        <div className="relative group overflow-hidden rounded-2xl cursor-pointer">
+        <div className="relative group overflow-hidden rounded-lg cursor-pointer">
           {thumbnailContent}
         </div>
       </MorphingDialogTrigger>
@@ -569,7 +569,7 @@ export default function Personal() {
             </div>
           </div>
 
-          <div className="relative">
+<div className="relative">
               {/* Story */}
               <div className={`space-y-5 text-[0.95rem] leading-[1.75] text-zinc-800 dark:text-zinc-100 sm:text-[1rem] transition-opacity duration-150 ${introView === 'story' ? 'block' : 'hidden'}`}>
                   <p>I&apos;m a Generative AI developer who likes building things that actually get used. I spend most of my time working with models, experimenting with ideas, and figuring out how to turn &ldquo;this would be cool&rdquo; into something real and reliable.</p>
