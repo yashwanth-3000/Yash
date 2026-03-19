@@ -45,17 +45,8 @@ type SocialLink = {
 }
 
 export const PROJECTS: Project[] = [
-  {
-    name: 'Creator Skill Generator',
-    date: 'Mar 2026',
-    thumbnail: 'https://img.youtube.com/vi/VQdmyS9Zhng/maxresdefault.jpg',
-    video: 'https://youtu.be/VQdmyS9Zhng',
-    link: 'https://github.com/yashwanth-3000/creator-skill-generator',
-    description:
-      'Transforms creator content (Twitter/X, YouTube, pasted text) into reusable AI skill packages compatible with Codex and Claude Code, powered by a multi-step CrewAI pipeline with FastAPI backend and Next.js frontend.',
-    tags: ['GenAI', 'CrewAI', 'FastAPI', 'Claude', 'Agentic'],
-    id: 'project-creator-skill-generator',
-  },
+
+
   {
     name: 'Kisan',
     date: 'Nov 2025',
@@ -67,6 +58,21 @@ export const PROJECTS: Project[] = [
     tags: ['GenAI', 'Multi-agent', 'GCP'],
     id: 'project-kisan',
   },
+
+  {
+    name: 'Creator Skill Generator',
+    date: 'Mar 2026',
+    result: '1st Place Winner',
+    thumbnail: 'https://img.youtube.com/vi/VQdmyS9Zhng/maxresdefault.jpg',
+    video: 'https://youtu.be/VQdmyS9Zhng',
+    link: 'https://x.com/Test_Sprite/status/2034736709876031574',
+    repo: 'https://github.com/yashwanth-3000/creator-skill-generator',
+    description:
+      'Transforms creator content (Twitter/X, YouTube, pasted text) into reusable AI skill packages compatible with Codex and Claude Code, powered by a multi-step CrewAI pipeline with FastAPI backend and Next.js frontend.',
+    tags: ['GenAI', 'CrewAI', 'FastAPI', 'Claude', 'Agentic'],
+    id: 'project-creator-skill-generator',
+  },
+
   {
     name: 'MakeMyCv',
     date: 'Nov 2025',
