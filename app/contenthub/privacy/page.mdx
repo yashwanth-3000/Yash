@@ -1,0 +1,124 @@
+### Privacy Notice , Content Hub AI (Adobe Express Add-on)
+
+**Effective date:** May 6, 2026<br />
+**Publisher / Data Controller:** Yashwanth Krishna (independent developer) ("we", "us")<br />
+**Support contact:** `pyashwanthkrishna@gmail.com`
+
+This Privacy Notice explains how the Content Hub AI Adobe Express add-on (the "Add-on") processes information when you use it inside Adobe Express.
+
+#### 1) What this covers
+
+This notice covers:
+
+- The Add-on UI running inside Adobe Express.
+- Any backend services or proxy endpoints used for captions, credits, payments, and related synchronization.
+
+Adobe Express is provided by Adobe. Adobe's own privacy practices are governed by Adobe's policies.
+
+#### 2) What the Add-on does (why data is processed)
+
+The Add-on lets you:
+
+- Capture your current Adobe Express page and use it as context for AI-generated social content.
+- Generate platform-specific copy for X, Instagram, and LinkedIn.
+- Edit generated captions and run "Thinking Mode" generations.
+- Set up an X-based "My Voice" profile using recent posts from an X account you choose to connect.
+- Buy credits and use a wallet-based checkout flow powered by Dodo Payments.
+- Optionally use Developer Mode to route supported flows through your own API keys or tokens.
+
+To provide these features, the Add-on must process prompts, captured design context, account identifiers, wallet state, and (for My Voice) selected X profile data.
+
+#### 3) Information processed
+
+**A) Adobe Express user information (when available via Adobe SDK)**
+
+- A unique Adobe user identifier.
+- Display name (if provided by Adobe Express).
+
+**B) Payment / credit information (Dodo Payments)**
+
+- Dodo customer ID and wallet balance.
+- Credit/debit ledger information (amount, reason, idempotency keys, timestamps).
+- Checkout session details (for example, hosted checkout links).
+- Payment-related events used to add purchased credits after successful checkout.
+- Metadata attached to credit purchases or Developer Mode purchases.
+
+We do **not** receive or store your full card number. Payment details are handled by Dodo Payments and its payment partners.
+
+**C) Content you provide for AI features**
+
+- Text prompts you type into Content Hub.
+- The rendered page/design capture exported from Adobe Express and used as caption context.
+- Caption edits or rewrite instructions you provide.
+- AI-generated outputs, including generated or edited captions.
+
+**D) X / My Voice information**
+
+If you use My Voice, the Add-on may process:
+
+- The X handle or X profile URL you enter.
+- Public profile information returned by the X-side integration (for example handle, display name, avatar, bio, counts, and verification state, when available).
+- Recent X posts fetched to build your reusable voice profile.
+- The saved generated voice/tone profile derived from that X content.
+
+**E) Developer Mode information**
+
+If you enable Developer Mode, the Add-on may process settings that determine whether supported flows use Content Hub-managed services or your own provider credentials. Any keys or tokens you provide for Developer Mode may be stored locally in your browser/device context so the Add-on can reuse them between sessions on that device.
+
+**F) Technical/log information**
+
+Backend services and payment-related systems may log operational details such as timestamps, endpoint usage, error messages, and transaction identifiers for debugging, abuse prevention, and support.
+
+#### 4) How information is used
+
+We use the information to:
+
+- Generate, edit, and format social captions based on your prompt and captured design.
+- Support platform-specific output rules for X, Instagram, and LinkedIn.
+- Build and save your X-based My Voice profile.
+- Show, deduct, and add credits to your wallet.
+- Create and manage checkout sessions for credits and Developer Mode purchases.
+- Detect abuse, troubleshoot failures, and provide support.
+
+#### 5) Who we share information with
+
+**OpenAI (AI processing):** Prompts, design context, edit instructions, and related caption-generation inputs may be sent to OpenAI to generate or refine results.
+
+**Dodo Payments (wallet and purchases):** We share the information needed to create or look up a customer, create checkout sessions, and synchronize wallet balances after successful payment.
+
+**X / related X integration services:** If you use My Voice, the add-on may fetch public X account and post data needed to generate your voice profile.
+
+**Infrastructure / hosting providers:** If backend services are hosted on third-party infrastructure, those providers may process operational logs and network traffic to run the service.
+
+We do **not** sell your personal information.
+
+#### 6) Data retention
+
+- **Prompts, design captures, and caption content:** Processed to provide requested results. We do not aim to retain this content longer than necessary for feature delivery, troubleshooting, support, or legal obligations.
+- **My Voice / X tone profiles:** May be retained so your saved voice can be reused without rebuilding it each session.
+- **Credits and payment records:** Retained as needed to operate wallet functionality, reconcile purchases, respond to disputes, and meet legal or accounting obligations.
+- **Developer Mode local settings:** May persist in local browser/device storage until you clear them, disable the feature, or remove them manually.
+- **Logs:** Operational logs may be retained for a limited period for debugging, security, and fraud-prevention purposes.
+
+#### 7) Security
+
+We use reasonable protections such as HTTPS/TLS for service communications and controls to reduce duplicate debits or credits. No system is perfectly secure. Do not include highly sensitive personal information in prompts, design captures, or connected content unless truly necessary.
+
+#### 8) Your choices and requests
+
+You can contact `pyashwanthkrishna@gmail.com` to request:
+
+- Access to information we control about you,
+- Deletion of data we control where feasible,
+- Help with credit, wallet, or purchase issues,
+- Help removing or resetting a saved My Voice profile where applicable.
+
+Some information, especially payment-related records, may need to be retained by payment providers for compliance reasons.
+
+#### 9) Children
+
+The Add-on is not intended for children under 13 (or the minimum age required by your jurisdiction).
+
+#### 10) Updates
+
+We may update this Privacy Notice over time. The "Effective date" will change when we do.

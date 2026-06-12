@@ -20,6 +20,13 @@ interface CustomerStats {
   recent24h: number
   timestamp: string
   customers: Array<{ created_at: string }>
+  hasMore?: boolean
+}
+
+interface CustomersStatsProps {
+  label?: string
+  project?: string
+  sourceLabel?: string
 }
 
 type DayPoint = { date: string; count: number }
@@ -283,13 +290,13 @@ function InteractiveChart({
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="h-[170px] w-full">
         <defs>
           <linearGradient id="pop-area" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgb(139,92,246)" stopOpacity="0.20" />
-            <stop offset="100%" stopColor="rgb(139,92,246)" stopOpacity="0.02" />
+            <stop offset="0%" stopColor="rgb(239,68,68)" stopOpacity="0.20" />
+            <stop offset="100%" stopColor="rgb(239,68,68)" stopOpacity="0.02" />
           </linearGradient>
           <linearGradient id="pop-line" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="rgb(139,92,246)" stopOpacity="0.4" />
-            <stop offset="50%" stopColor="rgb(139,92,246)" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="rgb(139,92,246)" stopOpacity="0.5" />
+            <stop offset="0%" stopColor="rgb(239,68,68)" stopOpacity="0.4" />
+            <stop offset="50%" stopColor="rgb(239,68,68)" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="rgb(239,68,68)" stopOpacity="0.5" />
           </linearGradient>
           <filter id="pop-glow">
             <feGaussianBlur stdDeviation="2.5" result="blur" />
@@ -354,7 +361,7 @@ function InteractiveChart({
             y1={PY}
             x2={hoveredPt.x}
             y2={H - PY}
-            stroke="rgb(139,92,246)"
+            stroke="rgb(239,68,68)"
             strokeWidth="1"
             strokeOpacity="0.3"
             strokeDasharray="3 3"
@@ -371,7 +378,7 @@ function InteractiveChart({
               cx={pt.x}
               cy={pt.y}
               r={isHovered ? 5 : 3}
-              fill={isHovered ? 'rgb(139,92,246)' : 'rgb(139,92,246)'}
+              fill={isHovered ? 'rgb(239,68,68)' : 'rgb(239,68,68)'}
               fillOpacity={isHovered ? 0.9 : 0.5}
               stroke="white"
               strokeWidth={isHovered ? 2 : 0}
@@ -447,7 +454,7 @@ function DayOfWeekHeatmap({ graphData }: { graphData: DayPoint[] }) {
             <motion.div
               className="absolute inset-y-0 left-0 rounded-md"
               style={{
-                background: `linear-gradient(90deg, rgba(139,92,246,${0.25 + (b.total / maxTotal) * 0.55}), rgba(139,92,246,${0.15 + (b.total / maxTotal) * 0.35}))`,
+                background: `linear-gradient(90deg, rgba(239,68,68,${0.25 + (b.total / maxTotal) * 0.55}), rgba(239,68,68,${0.15 + (b.total / maxTotal) * 0.35}))`,
               }}
               initial={{ width: 0 }}
               animate={{
@@ -495,14 +502,14 @@ function DailyLog({ graphData }: { graphData: DayPoint[] }) {
                 {date.toLocaleDateString('en-US', { weekday: 'short' })}
               </span>
               {isToday && (
-                <span className="ml-1.5 inline-flex items-center rounded-full bg-emerald-500/10 px-1.5 py-0 text-[0.5rem] font-semibold uppercase text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                <span className="ml-1.5 inline-flex items-center rounded-full bg-red-500/10 px-1.5 py-0 text-[0.5rem] font-semibold uppercase text-red-600 dark:bg-red-500/20 dark:text-red-400">
                   today
                 </span>
               )}
             </div>
             <div className="relative h-4 flex-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800/60">
               <motion.div
-                className="absolute inset-y-0 left-0 rounded-full bg-violet-500/30 dark:bg-violet-400/25"
+                className="absolute inset-y-0 left-0 rounded-full bg-red-500/30 dark:bg-red-400/25"
                 initial={{ width: 0 }}
                 animate={{
                   width: `${Math.max((d.count / maxCount) * 100, d.count > 0 ? 4 : 0)}%`,
@@ -573,7 +580,7 @@ function MonthlyBreakdown({
               </span>
               <div className="relative h-7 flex-1 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800/60">
                 <motion.div
-                  className="absolute inset-y-0 left-0 rounded-lg bg-gradient-to-r from-violet-500/60 to-violet-400/40"
+                  className="absolute inset-y-0 left-0 rounded-lg bg-gradient-to-r from-red-500/60 to-red-400/40"
                   initial={{ width: 0 }}
                   animate={{
                     width: `${Math.max((m.total / maxMonth) * 100, m.total > 0 ? 6 : 0)}%`,
@@ -612,7 +619,7 @@ function MonthlyBreakdown({
                   <span
                     className={`text-xs font-bold tabular-nums ${
                       pct >= 0
-                        ? 'text-emerald-600 dark:text-emerald-400'
+                        ? 'text-red-600 dark:text-red-400'
                         : 'text-red-500 dark:text-red-400'
                     }`}
                   >
@@ -655,7 +662,7 @@ function HourlyHeatmap({ stats, graphData }: { stats: CustomerStats; graphData: 
   return (
     <div className="space-y-4">
       <div className="flex gap-2 text-[0.6rem]">
-        <div className="rounded-md bg-violet-500/10 px-2 py-1 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
+        <div className="rounded-md bg-red-500/10 px-2 py-1 text-red-600 dark:bg-red-500/20 dark:text-red-400">
           Peak: <span className="font-bold">{peakHour}:00 UTC</span> ({hourly[peakHour]} downloads)
         </div>
         <div className="rounded-md bg-zinc-100 px-2 py-1 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
@@ -676,8 +683,8 @@ function HourlyHeatmap({ stats, graphData }: { stats: CustomerStats; graphData: 
               className="group relative flex flex-col items-center rounded-lg p-1.5 transition-transform hover:scale-105"
               style={{
                 backgroundColor: count > 0
-                  ? `rgba(139,92,246,${0.08 + intensity * 0.45})`
-                  : 'rgba(139,92,246,0.03)',
+                  ? `rgba(239,68,68,${0.08 + intensity * 0.45})`
+                  : 'rgba(239,68,68,0.03)',
               }}
             >
               <span className="text-[0.55rem] tabular-nums text-zinc-400 dark:text-zinc-500">
@@ -712,7 +719,7 @@ function HourlyHeatmap({ stats, graphData }: { stats: CustomerStats; graphData: 
               key={h}
               className="group relative flex-1 cursor-pointer rounded-t-sm transition-colors"
               style={{
-                backgroundColor: `rgba(139,92,246,${0.2 + (count / maxHour) * 0.6})`,
+                backgroundColor: `rgba(239,68,68,${0.2 + (count / maxHour) * 0.6})`,
               }}
               initial={{ height: 0 }}
               animate={{ height: `${Math.max((count / maxHour) * 100, count > 0 ? 4 : 1)}%` }}
@@ -750,13 +757,13 @@ function TopDays({ graphData }: { graphData: DayPoint[] }) {
   return (
     <div className="space-y-4">
       <div className="flex gap-3 text-[0.6rem]">
-        <div className="rounded-md bg-emerald-500/10 px-2.5 py-1 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+        <div className="rounded-md bg-red-500/10 px-2.5 py-1 text-red-600 dark:bg-red-500/20 dark:text-red-400">
           <span className="font-bold">{totalActive}</span> active days
         </div>
         <div className="rounded-md bg-zinc-100 px-2.5 py-1 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
           <span className="font-bold">{zeroDays}</span> zero days
         </div>
-        <div className="rounded-md bg-violet-500/10 px-2.5 py-1 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
+        <div className="rounded-md bg-red-500/10 px-2.5 py-1 text-red-600 dark:bg-red-500/20 dark:text-red-400">
           Activity rate: <span className="font-bold">{totalDays > 0 ? Math.round((totalActive / totalDays) * 100) : 0}%</span>
         </div>
       </div>
@@ -779,7 +786,7 @@ function TopDays({ graphData }: { graphData: DayPoint[] }) {
                 <span
                   className={`w-6 shrink-0 text-center text-[0.65rem] font-bold tabular-nums ${
                     isTop3
-                      ? 'text-violet-600 dark:text-violet-400'
+                      ? 'text-red-600 dark:text-red-400'
                       : 'text-zinc-400 dark:text-zinc-500'
                   }`}
                 >
@@ -797,8 +804,8 @@ function TopDays({ graphData }: { graphData: DayPoint[] }) {
                   <motion.div
                     className={`absolute inset-y-0 left-0 rounded-full ${
                       isTop3
-                        ? 'bg-gradient-to-r from-violet-500/60 to-violet-400/40'
-                        : 'bg-violet-500/25 dark:bg-violet-400/20'
+                        ? 'bg-gradient-to-r from-red-500/60 to-red-400/40'
+                        : 'bg-red-500/25 dark:bg-red-400/20'
                     }`}
                     initial={{ width: 0 }}
                     animate={{
@@ -810,7 +817,7 @@ function TopDays({ graphData }: { graphData: DayPoint[] }) {
                 <span
                   className={`w-6 shrink-0 text-right text-xs font-bold tabular-nums ${
                     isTop3
-                      ? 'text-violet-600 dark:text-violet-400'
+                      ? 'text-red-600 dark:text-red-400'
                       : 'text-zinc-600 dark:text-zinc-300'
                   }`}
                 >
@@ -956,7 +963,7 @@ function AnalyticsPopup({
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between border-b border-zinc-100 px-5 py-3 dark:border-zinc-800/60">
           <div className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-violet-500" />
+            <BarChart3 className="h-4 w-4 text-red-500" />
             <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
               Download Analytics
             </span>
@@ -1003,7 +1010,7 @@ function AnalyticsPopup({
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="analytics-tab-indicator"
-                  className="absolute inset-x-0 -bottom-px h-[2px] rounded-full bg-violet-500"
+                  className="absolute inset-x-0 -bottom-px h-[2px] rounded-full bg-red-500"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
@@ -1120,7 +1127,7 @@ function AnalyticsPopup({
                           </span>
                           <div className="relative h-5 flex-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800/80">
                             <motion.div
-                              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-violet-500/70 to-violet-400/50"
+                              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-red-500/70 to-red-400/50"
                               initial={{ width: 0 }}
                               animate={{
                                 width: `${Math.max(
@@ -1173,8 +1180,8 @@ function AnalyticsPopup({
                                         style={{
                                           backgroundColor:
                                             d.count > 0
-                                              ? `rgba(139,92,246,${0.15 + intensity * 0.6})`
-                                              : 'rgba(139,92,246,0.05)',
+                                              ? `rgba(239,68,68,${0.15 + intensity * 0.6})`
+                                              : 'rgba(239,68,68,0.05)',
                                         }}
                                       />
                                       <span className="text-[0.5rem] tabular-nums text-zinc-400 dark:text-zinc-500">
@@ -1285,33 +1292,46 @@ function AnalyticsPopup({
 }
 
 // ─── Main component ──────────────────────────────────
-export function CustomersStats() {
+export function CustomersStats({
+  label = 'Downloads',
+  project,
+  sourceLabel = 'live from Dodo Payments',
+}: CustomersStatsProps) {
   const [stats, setStats] = useState<CustomerStats | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showPopup, setShowPopup] = useState(false)
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/customers', {
+      const params = project ? `?project=${encodeURIComponent(project)}` : ''
+      const response = await fetch(`/api/customers${params}`, {
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache' },
       })
       if (!response.ok) throw new Error('Failed to fetch')
       const data = await response.json()
+      const customers = Array.isArray(data.customers) ? data.customers : []
 
-      const recent24h = data.customers.filter((c: any) => {
+      const recent24h = customers.filter((c: any) => {
         const diff = new Date().getTime() - new Date(c.created_at).getTime()
         return diff < 24 * 60 * 60 * 1000
       }).length
 
       setStats({
-        total: data.total,
+        total: typeof data.total === 'number' ? data.total : customers.length,
         recent24h,
         timestamp: data.timestamp,
-        customers: data.customers,
+        customers,
+        hasMore: Boolean(data.hasMore),
       })
     } catch (error) {
       console.error('Error fetching customer stats:', error)
+      setStats({
+        total: 0,
+        recent24h: 0,
+        timestamp: new Date().toISOString(),
+        customers: [],
+      })
     } finally {
       setIsLoading(false)
     }
@@ -1319,7 +1339,7 @@ export function CustomersStats() {
 
   useEffect(() => {
     fetchStats()
-  }, [])
+  }, [project])
 
   const allGraphData = useAllGraphData(stats)
   const cardGraphData = useMemo(() => allGraphData.slice(-30), [allGraphData])
@@ -1345,14 +1365,14 @@ export function CustomersStats() {
           >
             <defs>
               <linearGradient id="stats-area-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgb(139,92,246)" stopOpacity="0.18" />
-                <stop offset="50%" stopColor="rgb(139,92,246)" stopOpacity="0.07" />
-                <stop offset="100%" stopColor="rgb(139,92,246)" stopOpacity="0.01" />
+                <stop offset="0%" stopColor="rgb(239,68,68)" stopOpacity="0.18" />
+                <stop offset="50%" stopColor="rgb(239,68,68)" stopOpacity="0.07" />
+                <stop offset="100%" stopColor="rgb(239,68,68)" stopOpacity="0.01" />
               </linearGradient>
               <linearGradient id="stats-line-grad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="rgb(139,92,246)" stopOpacity="0.12" />
-                <stop offset="50%" stopColor="rgb(139,92,246)" stopOpacity="0.30" />
-                <stop offset="100%" stopColor="rgb(139,92,246)" stopOpacity="0.18" />
+                <stop offset="0%" stopColor="rgb(239,68,68)" stopOpacity="0.12" />
+                <stop offset="50%" stopColor="rgb(239,68,68)" stopOpacity="0.30" />
+                <stop offset="100%" stopColor="rgb(239,68,68)" stopOpacity="0.18" />
               </linearGradient>
               <filter id="stats-glow">
                 <feGaussianBlur stdDeviation="4" result="blur" />
@@ -1405,7 +1425,7 @@ export function CustomersStats() {
                 transition={{ delay: 0.5 + i * 0.025, duration: 0.5, ease: 'easeOut' }}
                 className="w-[1.5px] origin-bottom rounded-full"
                 style={{
-                  background: `linear-gradient(to top, rgba(139,92,246,0.03), rgba(139,92,246,${0.08 + (point.count / maxCount) * 0.14}))`,
+                  background: `linear-gradient(to top, rgba(239,68,68,0.03), rgba(239,68,68,${0.08 + (point.count / maxCount) * 0.14}))`,
                 }}
               />
             </motion.div>
@@ -1420,13 +1440,13 @@ export function CustomersStats() {
           animate={{ opacity: 1 }}
           transition={{ delay: 2.8, duration: 0.8, ease: 'easeIn' }}
         >
-          {stats.total}
+          {stats.total}{stats.hasMore ? '+' : ''}
         </motion.span>
 
         {/* Content */}
         <div className="relative z-10">
           <p className="mb-1.5 text-[0.65rem] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-            Downloads
+            {label}
           </p>
           <div className="flex items-end gap-1.5">
             <Counter
@@ -1435,6 +1455,11 @@ export function CustomersStats() {
               fontSize={24}
               className="text-zinc-900 dark:text-zinc-100"
             />
+            {stats.hasMore ? (
+              <span className="pb-[4px] text-lg font-bold leading-none text-zinc-900 dark:text-zinc-100">
+                +
+              </span>
+            ) : null}
             <span className="pb-[5px] text-xs text-zinc-400 dark:text-zinc-500">
               and counting
             </span>
@@ -1442,11 +1467,11 @@ export function CustomersStats() {
           <div className="mt-2.5 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <span className="relative flex h-1.5 w-1.5 shrink-0">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
               </span>
               <span className="text-[0.68rem] text-zinc-400 dark:text-zinc-500">
-                live from Dodo Payments
+                {sourceLabel}
               </span>
             </div>
             <motion.button
@@ -1454,7 +1479,7 @@ export function CustomersStats() {
               onClick={() => setShowPopup(true)}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
-              className="flex items-center gap-1 rounded-full bg-violet-500/10 px-2.5 py-1 text-[0.62rem] font-semibold text-violet-600 transition-colors hover:bg-violet-500/20 dark:bg-violet-500/15 dark:text-violet-400 dark:hover:bg-violet-500/25"
+              className="flex items-center gap-1 rounded-full bg-red-500/10 px-2.5 py-1 text-[0.62rem] font-semibold text-red-600 transition-colors hover:bg-red-500/20 dark:bg-red-500/15 dark:text-red-400 dark:hover:bg-red-500/25"
             >
               <BarChart3 className="h-3 w-3" />
               Analytics

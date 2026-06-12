@@ -76,11 +76,11 @@ body {
 
 /* Selection styling */
 ::selection {
-  background-color: rgba(139, 92, 246, 0.2);
+  background-color: rgba(239, 68, 68, 0.2);
 }
 
 html.dark ::selection {
-  background-color: rgba(139, 92, 246, 0.3);
+  background-color: rgba(239, 68, 68, 0.3);
 }
 
 /* Shimmer animation for loading states */

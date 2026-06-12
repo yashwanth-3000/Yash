@@ -56,6 +56,8 @@ export const Counter = ({
     <div
       ref={ref}
       style={{ fontSize: fontSizeProp }}
+      role="text"
+      aria-label={value.toLocaleString()}
       {...rest}
       className={cn("flex overflow-hidden leading-none font-bold tabular-nums", className)}
     >
@@ -78,7 +80,9 @@ function Digit({ place, value, fontSizeProp }: { place: number; value: number; f
   }, [animatedValue, valueRoundedToPlace])
 
   return (
-    <div style={{ height: h }} className="relative w-[0.6em]">
+    // Keep this digit stack for the rolling odometer animation; aria-hidden keeps
+    // screen readers from reading every 0-9 slot while the parent exposes the value.
+    <div style={{ height: h }} className="relative w-[0.6em]" aria-hidden="true">
       {[...Array(10)].map((_, i) => (
         <Number key={i} mv={animatedValue} number={i} h={h} />
       ))}

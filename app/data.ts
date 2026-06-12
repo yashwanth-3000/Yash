@@ -13,6 +13,9 @@ type Project = {
   live?: boolean
   /** Optional live stats shown on the project card. */
   stats?: { label: string; value: number; suffix?: string }[]
+  /** Optional Dodo customer stats source shown on the live project card. */
+  statsProject?: string
+  statsLabel?: string
   /** Optional date/result for hackathons or competitions. */
   date?: string
   result?: string
@@ -48,29 +51,43 @@ export const PROJECTS: Project[] = [
 
 
   {
-    name: 'Kisan',
-    date: 'Nov 2025',
-    thumbnail: 'https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg',
-    link: 'https://devpost.com/software/kissan-p5h81u',
-    repo: 'https://github.com/yashwanth-3000/kisan',
+    name: 'ChatDock',
+    date: 'Jun 2026',
+    thumbnail: 'https://img.youtube.com/vi/RJMUyunJStk/maxresdefault.jpg',
+    video: 'https://youtu.be/RJMUyunJStk',
+    link: 'https://github.com/yashwanth-3000/chatdoc',
+    repo: 'https://github.com/yashwanth-3000/chatdoc',
     description:
-      'Built Kisan, an AI-powered multi-agent platform that helps farmers with crop advice, disease detection, weather insights, and government scheme guidance.',
-    tags: ['GenAI', 'Multi-agent', 'GCP'],
-    id: 'project-kisan',
+      'Guided builder for governed website chatbots on TrueFoundry\'s AI Gateway. Auto-discovers models, MCP servers, and guardrails, adds tiered rate limiting and failover, offers live testing with full request tracing, and generates React widget + Next.js API route code.',
+    tags: ['GenAI', 'TrueFoundry', 'MCP'],
+    id: 'project-chatdock',
   },
 
   {
-    name: 'Creator Skill Generator',
-    date: 'Mar 2026',
-    result: '1st Place Winner',
-    thumbnail: 'https://img.youtube.com/vi/VQdmyS9Zhng/maxresdefault.jpg',
-    video: 'https://youtu.be/VQdmyS9Zhng',
-    link: 'https://x.com/Test_Sprite/status/2034736709876031574',
-    repo: 'https://github.com/yashwanth-3000/creator-skill-generator',
+    name: 'Real Deal',
+    date: 'May 2026',
+    thumbnail: 'https://img.youtube.com/vi/GmWMEVWMRgc/hqdefault.jpg',
+    video: 'https://youtu.be/GmWMEVWMRgc',
+    link: 'https://github.com/yashwanth-3000/real-deal',
+    repo: 'https://github.com/yashwanth-3000/real-deal',
     description:
-      'Transforms creator content (Twitter/X, YouTube, pasted text) into reusable AI skill packages compatible with Codex and Claude Code, powered by a multi-step CrewAI pipeline with FastAPI backend and Next.js frontend.',
-    tags: ['GenAI', 'CrewAI', 'FastAPI', 'Claude', 'Agentic'],
-    id: 'project-creator-skill-generator',
+      'AI-powered sponsorship manager for creators that connects to Gmail, analyzes brand-deal conversations with Gemini agents, flags risky outreach, drafts replies, and remembers context across deals.',
+    tags: ['GenAI', 'CrewAI', 'Gemini', 'FastAPI', 'Supabase'],
+    id: 'project-real-deal',
+  },
+
+  {
+    name: 'AI Merchant Studio',
+    date: 'Jan 2026',
+    result: 'Best Design Winner',
+    thumbnail: 'https://img.youtube.com/vi/JIu-IRZctgY/maxresdefault.jpg',
+    video: 'https://youtu.be/JIu-IRZctgY',
+    link: 'https://lablab.ai/ai-hackathons/agentic-commerce-on-arc/commerce-studio/ai-merchant-studio-and-storefront',
+    repo: 'https://github.com/yashwanth-3000/arc',
+    description:
+      'USDC payments unlock AI-generated product images + video. On-chain verification gates generation and products auto-publish to a consumer storefront.',
+    tags: ['GenAI', 'Replicate', 'Web3','Arc','Circle'],
+    id: 'project-arc',
   },
 
   {
@@ -83,21 +100,20 @@ export const PROJECTS: Project[] = [
     repo: 'https://github.com/yashwanth-3000/MakeMyCv',
     description:
       'AI-native CV builder that turns a developer\'s GitHub, LinkedIn, and X profiles into a polished, ATS-friendly resume compiled as a LaTeX PDF.',
-    tags: ['GenAI', 'Automation', 'Opus', 'No-code Workflow'],
+    tags: ['Automation', 'Opus', 'No-code Workflow'],
     id: 'project-makemycv',
   },
   {
-    name: 'AI Merchant Studio & Storefront',
-    date: 'Jan 2026',
-    result: 'Best Design Winner',
-    thumbnail: 'https://img.youtube.com/vi/JIu-IRZctgY/maxresdefault.jpg',
-    video: 'https://youtu.be/JIu-IRZctgY',
-    link: 'https://lablab.ai/ai-hackathons/agentic-commerce-on-arc/commerce-studio/ai-merchant-studio-and-storefront',
-    repo: 'https://github.com/yashwanth-3000/arc',
+    name: 'Kisan',
+    date: 'Nov 2025',
+    thumbnail: 'https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg',
+    video: 'https://youtu.be/f_83UtdzBdg',
+    link: 'https://devpost.com/software/kissan-p5h81u',
+    repo: 'https://github.com/yashwanth-3000/kisan',
     description:
-      'USDC payments unlock AI-generated product images + video. On-chain verification gates generation and products auto-publish to a consumer storefront.',
-    tags: ['GenAI', 'Replicate', 'Web3','Arc','Circle'],
-    id: 'project-arc',
+      'Built Kisan, an AI-powered multi-agent platform that helps farmers with crop advice, disease detection, weather insights, and government scheme guidance.',
+    tags: ['GenAI', 'Multi-agent', 'GCP'],
+    id: 'project-kisan',
   },
   {
     name: 'Dream',
@@ -112,20 +128,8 @@ export const PROJECTS: Project[] = [
     id: 'project-dream',
   },
   {
-    name: 'findr.ai',
-    date: 'Oct 2025',
-    thumbnail: 'https://i.ibb.co/wZDysrrC/Generate-Tab.jpg',
-    video: 'https://www.youtube.com/watch?v=dxQRxcknwAw',
-    link: 'https://devpost.com/software/findr-ai',
-    repo: 'https://github.com/yashwanth-3000/findr--ai',
-    description:
-      'AI-powered technical hiring platform that analyzes resumes, verifies GitHub projects for authenticity, and delivers scored candidates with 0–100% suitability rankings.',
-    tags: ['GenAI', 'Multi-agent', 'CrewAI', 'Claude'],
-    id: 'project-findr-ai',
-  },
-  {
     name: 'Adobe Express Hackathon',
-    date: 'June 2025',
+    date: 'June 2025 - Jan 2026',
     result: 'Adobe Funded',
     thumbnail: 'https://i.ibb.co/DgHjM2Ff/1.png',
     video: 'https://youtu.be/4PMIb5cyBMk',
@@ -136,7 +140,35 @@ export const PROJECTS: Project[] = [
     live: true,
     repo: 'https://github.com/yashwanth-3000/img-crafter',
     details: '/blog/img-crafter-adobe-addon',
+    statsProject: 'img-crafter',
     id: 'project-img-crafter',
+  },
+  {
+    name: 'AI Content Hub',
+    date: 'Jan 2026 - May 2026',
+    result: 'Adobe Funded',
+    thumbnail: 'https://img.youtube.com/vi/Zi9OIin8GEw/maxresdefault.jpg',
+    video: 'https://youtu.be/Zi9OIin8GEw',
+    link: 'https://adobesparkpost.app.link/TR9Mb7TXFLb?addOnId=wj42l92gk',
+    description:
+      "Adobe-funded Content Hub went live in May 2026. It creates platform-ready captions for X, Instagram, and LinkedIn from Adobe Express design context, with My Voice, emoji, hashtag, Thinking Mode, and edit controls.",
+    tags: ['GenAI', 'Adobe', 'Social', 'OpenAI'],
+    live: true,
+    statsProject: 'content-hub',
+    statsLabel: 'Users',
+    id: 'project-content-hub',
+  },
+  {
+    name: 'Draftr',
+    date: 'Mar 2026',
+    thumbnail: 'https://img.youtube.com/vi/66YCp-HzBOg/maxresdefault.jpg',
+    video: 'https://youtu.be/66YCp-HzBOg',
+    link: '',
+    repo: 'https://github.com/yashwanth-3000/brainrot',
+    description:
+      'Turns URLs, PDFs, or pasted text into rendered short-form videos with source ingestion, script planning, narration, timed subtitles, vertical MP4 rendering, saved libraries, and retention-based recommendations.',
+    tags: ['GenAI', 'Video', 'FastAPI', 'Next.js', 'Supabase'],
+    id: 'project-draftr',
   },
   {
     name: 'Dev Docs',

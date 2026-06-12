@@ -10,6 +10,10 @@ import {
   Calendar,
   Youtube,
   BookOpen,
+  Trophy,
+  Medal,
+  Award,
+  BadgeCheck,
 } from 'lucide-react'
 
 function GithubIcon({ className }: { className?: string }) {
@@ -22,9 +26,9 @@ function GithubIcon({ className }: { className?: string }) {
 import { LinkPreview } from '@/components/ui/link-preview'
 import { Spotlight } from '@/components/ui/spotlight'
 import { Counter } from '@/components/ui/animated-counter'
-import { GlowEffect } from '@/components/ui/glow-effect'
 import { Magnetic } from '@/components/ui/magnetic'
 import { CustomersStats } from '@/components/customers-stats'
+import { TAG_ICONS, AdobeIcon } from '@/components/brand-icons'
 import {
   MorphingDialog,
   MorphingDialogTrigger,
@@ -200,6 +204,7 @@ function ProjectVideo({ src, thumbnail, projectLink }: ProjectVideoProps) {
             alt="Project thumbnail"
             fill
             sizes="(min-width: 640px) 50vw, 100vw"
+            unoptimized
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           />
         </div>
@@ -265,6 +270,7 @@ function ProjectVideo({ src, thumbnail, projectLink }: ProjectVideoProps) {
                   alt="Full screen preview"
                   fill
                   sizes="100vw"
+                  unoptimized
                   className="object-cover"
                 />
               </div>
@@ -319,6 +325,7 @@ function ProjectImageCard({
             alt={`${name} thumbnail`}
             fill
             sizes="(min-width: 640px) 50vw, 100vw"
+            unoptimized
             className="object-cover scale-105 transition-transform duration-500 ease-out group-hover:scale-110"
           />
         </div>
@@ -346,16 +353,24 @@ function TagPills({
   tags,
   onTagClick,
   activeTag,
+  leading,
+  className = '',
 }: {
   tags: string[]
   onTagClick?: (tag: string) => void
   activeTag?: string | null
+  /** Inline content (e.g. date · result) rendered as the first flex items so it
+   *  flows on the same wrapping line as the tags — no stranded separator. */
+  leading?: React.ReactNode
+  className?: string
 }) {
-  if (!tags?.length) return null
+  if (!tags?.length && !leading) return null
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div className={`flex flex-wrap items-center gap-x-2 gap-y-1.5 ${className}`}>
+      {leading}
       {tags.map((tag) => {
         const active = activeTag === tag
+        const Icon = TAG_ICONS[tag.toLowerCase()]
         return onTagClick ? (
           <motion.button
             key={tag}
@@ -366,24 +381,63 @@ function TagPills({
             whileHover={{ y: -1, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 420, damping: 28 }}
-            className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 ${
+            className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 ${
               active
                 ? 'cursor-pointer bg-zinc-900 text-white shadow-sm shadow-zinc-900/20 ring-1 ring-white/10 dark:bg-white dark:text-zinc-900 dark:shadow-white/10 dark:ring-zinc-900/10'
-                : 'cursor-pointer bg-zinc-100/80 text-zinc-500 hover:bg-zinc-200/80 hover:text-zinc-900 hover:ring-1 hover:ring-violet-500/25 hover:shadow-sm hover:shadow-violet-500/10 dark:bg-zinc-800/60 dark:text-zinc-400 dark:hover:bg-zinc-700/70 dark:hover:text-zinc-100 dark:hover:ring-violet-400/20'
+                : 'cursor-pointer bg-zinc-100/80 text-zinc-500 hover:bg-zinc-200/80 hover:text-zinc-900 hover:ring-1 hover:ring-red-500/25 hover:shadow-sm hover:shadow-red-500/10 dark:bg-zinc-800/60 dark:text-zinc-400 dark:hover:bg-zinc-700/70 dark:hover:text-zinc-100 dark:hover:ring-red-400/20'
             }`}
           >
+            {Icon ? <Icon className="h-2.5 w-2.5 shrink-0" /> : null}
             {tag}
           </motion.button>
         ) : (
           <span
             key={tag}
-            className="inline-flex items-center rounded-md bg-zinc-100/80 px-2 py-0.5 text-[10px] font-medium text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400"
+            className="inline-flex items-center gap-1 rounded-md bg-zinc-100/80 px-2 py-0.5 text-[10px] font-medium text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400"
           >
+            {Icon ? <Icon className="h-2.5 w-2.5 shrink-0" /> : null}
             {tag}
           </span>
         )
       })}
     </div>
+  )
+}
+
+/**
+ * Achievement badge — trophy/medal/check icon + clean pill.
+ * Red accent for top results (winner / 1st / funded / best), neutral zinc otherwise.
+ */
+function ResultBadge({ result }: { result?: string }) {
+  if (!result) return null
+  const r = result.toLowerCase()
+  const isTop =
+    r.includes('winner') ||
+    r.includes('won') ||
+    r.includes('1st') ||
+    r.includes('3rd') ||
+    r.includes('best') ||
+    r.includes('funded')
+  const Icon = r.includes('adobe')
+    ? AdobeIcon
+    : r.includes('funded')
+      ? BadgeCheck
+      : r.includes('1st') || r.includes('winner') || r.includes('won') || r.includes('best')
+        ? Trophy
+        : r.includes('2nd') || r.includes('3rd') || r.includes('place')
+          ? Medal
+          : Award
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-medium ${
+        isTop
+          ? 'bg-red-500/10 text-red-500 dark:bg-red-500/15 dark:text-red-400'
+          : 'bg-zinc-100/80 text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400'
+      }`}
+    >
+      <Icon className="h-2.5 w-2.5 shrink-0" />
+      {result}
+    </span>
   )
 }
 
@@ -722,26 +776,16 @@ export default function Personal() {
                    className="group/card"
                  >
                    <div className="space-y-3">
-                     <div className="relative rounded-xl p-[2px]">
-                       <GlowEffect
-                         colors={['#3b82f6', '#8b5cf6', '#ec4899', '#ef4444', '#3b82f6']}
-                         mode="rotate"
-                         blur="soft"
-                         duration={4}
-                         scale={1.0}
-                         className="rounded-xl opacity-60 dark:opacity-80"
-                       />
-                       <div className="relative rounded-[10px] overflow-hidden bg-zinc-100 dark:bg-zinc-900">
-                         {project.video ? (
-                           <ProjectVideo src={project.video} thumbnail={project.thumbnail} projectLink={project.link} />
-                         ) : (
-                           <ProjectImageCard
-                             thumbnail={project.thumbnail}
-                             name={project.name}
-                             link={project.link}
-                           />
-                         )}
-                       </div>
+                     <div className="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                       {project.video ? (
+                         <ProjectVideo src={project.video} thumbnail={project.thumbnail} projectLink={project.link} />
+                       ) : (
+                         <ProjectImageCard
+                           thumbnail={project.thumbnail}
+                           name={project.name}
+                           link={project.link}
+                         />
+                       )}
                      </div>
                      <div className="space-y-2">
                        <div className="flex items-center gap-2">
@@ -773,33 +817,36 @@ export default function Personal() {
                            </a>
                          ) : null}
                        </div>
-                      <TagPills
-                        tags={project.tags}
-                        onTagClick={toggleTag}
-                        activeTag={selectedTag}
-                      />
-                       {project.date && project.result ? (
-                         <div className="flex items-center gap-2 pt-1">
-                           <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                             {project.date}
-                           </span>
-                           <span className="text-zinc-200 dark:text-zinc-700">·</span>
-                           <span
-                             className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide ${
-                               project.result.toLowerCase().includes('winner') ||
-                               project.result.toLowerCase().includes('won')
-                                 ? 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400'
-                                 : project.result.toLowerCase().includes('funded')
-                                   ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
-                                   : project.result.toLowerCase().includes('2nd') ||
-                                       project.result.toLowerCase().includes('place')
-                                     ? 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
-                                     : 'bg-zinc-500/10 text-zinc-600 dark:bg-zinc-500/20 dark:text-zinc-400'
-                             }`}
-                           >
-                             {project.result}
-                           </span>
-                         </div>
+                       {project.result ? (
+                         <>
+                           {/* Winning: date · place — tags on their own line below */}
+                           <div className="flex flex-wrap items-center gap-2 pt-1">
+                             {project.date ? (
+                               <span className="text-xs text-zinc-400 dark:text-zinc-500">{project.date}</span>
+                             ) : null}
+                             {project.date ? <span className="text-zinc-300 dark:text-zinc-700">·</span> : null}
+                             <ResultBadge result={project.result} />
+                           </div>
+                           <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
+                         </>
+                       ) : (project.date || project.tags?.length) ? (
+                         /* Non-winning: date · tags inline */
+                         <TagPills
+                           tags={project.tags}
+                           onTagClick={toggleTag}
+                           activeTag={selectedTag}
+                           className="pt-1"
+                           leading={
+                             project.date ? (
+                               <>
+                                 <span className="text-xs text-zinc-400 dark:text-zinc-500">{project.date}</span>
+                                 {project.tags?.length ? (
+                                   <span className="text-zinc-300 dark:text-zinc-700">·</span>
+                                 ) : null}
+                               </>
+                             ) : null
+                           }
+                         />
                        ) : null}
                        <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
                          {project.description}
@@ -846,75 +893,45 @@ export default function Personal() {
                    transition={TRANSITION_LAYOUT}
                    className="group/card"
                  >
-                   {/* Mobile: single column, same hierarchy as featured cards */}
-                   <div className="block sm:hidden space-y-3">
-                     <div className="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
-                       {project.video ? (
-                         <ProjectVideo src={project.video} thumbnail={project.thumbnail} projectLink={project.link} />
-                       ) : (
-                         <ProjectImageCard thumbnail={project.thumbnail} name={project.name} link={project.link} />
-                       )}
-                     </div>
-                     <div className="space-y-1.5">
-                       <div className="flex items-center gap-2">
-                         {project.link ? (
-                           <a className="group/link relative inline-block font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors" href={project.link} target="_blank" rel="noopener noreferrer">
-                             {project.name}
-                             <span className="absolute -bottom-0.5 left-0 block h-px w-full max-w-0 bg-current transition-all duration-300 group-hover/link:max-w-full" />
-                           </a>
-                         ) : (
-                           <span className="font-semibold text-zinc-900 dark:text-zinc-100">{project.name}</span>
-                         )}
-                         {project.video && isYoutube(project.video) ? (
-                           <a href={project.video} target="_blank" rel="noopener noreferrer" className="group/yt inline-flex items-center gap-1 overflow-hidden rounded-full bg-red-50 px-1.5 py-0.5 text-red-500 transition-all duration-300 hover:bg-red-100 hover:px-2.5 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20">
-                             <Youtube className="h-3.5 w-3.5 shrink-0" />
-                             <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/yt:max-w-[5rem]">Watch demo</span>
-                           </a>
-                         ) : null}
-                         {(project.repo || isGithub(project.link)) ? (
-                           <a href={project.repo || project.link} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.name} on GitHub`} className="group/gh inline-flex items-center gap-1 overflow-hidden rounded-full bg-zinc-100 px-1.5 py-0.5 text-zinc-500 transition-all duration-300 hover:bg-zinc-200 hover:px-2.5 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700">
-                             <GithubIcon className="h-3.5 w-3.5 shrink-0" />
-                             <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/gh:max-w-[4rem]">GitHub</span>
-                           </a>
-                         ) : null}
-                       </div>
-                       <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">{project.description}</p>
-                     </div>
-                     {project.date && project.result ? (
-                       <div className="flex items-center gap-2">
-                         <span className="text-xs text-zinc-400 dark:text-zinc-500">{project.date}</span>
-                         <span className="text-zinc-300 dark:text-zinc-700">·</span>
-                         <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide ${project.result.toLowerCase().includes('funded') ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400'}`}>{project.result}</span>
-                       </div>
-                     ) : null}
-                     <div className="flex items-center gap-3">
+                   {/* Layout 6 — thumbnail narrow / stats wide */}
+                   <div className="space-y-3">
+                     <div className="flex items-center gap-2">
                        {project.link ? (
-                         <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors">
-                           <LinkIcon className="h-3 w-3" />Try it
+                         <a className="group/link relative inline-block text-xl font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors" href={project.link} target="_blank" rel="noopener noreferrer">
+                           {project.name}
+                           <span className="absolute -bottom-0.5 left-0 block h-px w-full max-w-0 bg-current transition-all duration-300 group-hover/link:max-w-full" />
                          </a>
-                       ) : null}
+                       ) : (
+                         <span className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{project.name}</span>
+                       )}
                        {project.video && isYoutube(project.video) ? (
-                         <a href={project.video} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 transition-colors">
-                           <Youtube className="h-3 w-3" />Watch demo
+                         <a href={project.video} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${project.name} on YouTube`} className="group/yt inline-flex items-center gap-1 overflow-hidden rounded-full bg-red-50 px-1.5 py-0.5 text-red-500 transition-all duration-300 hover:bg-red-100 hover:px-2.5 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20">
+                           <Youtube className="h-3.5 w-3.5 shrink-0" />
+                           <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/yt:max-w-[5rem]">Watch demo</span>
                          </a>
                        ) : null}
-                       {project.details ? (
-                         <NextLink href={project.details} className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400 transition-colors">
-                           <BookOpen className="h-3 w-3" />How it's built
-                         </NextLink>
+                       {(project.repo || isGithub(project.link)) ? (
+                         <a href={project.repo || project.link} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.name} on GitHub`} className="group/gh inline-flex items-center gap-1 overflow-hidden rounded-full bg-zinc-100 px-1.5 py-0.5 text-zinc-500 transition-all duration-300 hover:bg-zinc-200 hover:px-2.5 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700">
+                           <GithubIcon className="h-3.5 w-3.5 shrink-0" />
+                           <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/gh:max-w-[4rem]">GitHub</span>
+                         </a>
                        ) : null}
                      </div>
-                     <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
-                    {project.id === 'project-img-crafter' && (
-                      <div className="space-y-3">
-                        <CustomersStats />
-                      </div>
-                    )}
-                   </div>
 
-                   {/* Desktop: two-column grid */}
-                   <div className="hidden sm:grid sm:grid-cols-2 gap-5">
-                     <div className="space-y-2.5">
+                     <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">{project.description}</p>
+
+                     {project.statsProject ? (
+                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-[2fr_3fr]">
+                         <div className="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                           {project.video ? (
+                             <ProjectVideo src={project.video} thumbnail={project.thumbnail} projectLink={project.link} />
+                           ) : (
+                             <ProjectImageCard thumbnail={project.thumbnail} name={project.name} link={project.link} />
+                           )}
+                         </div>
+                         <CustomersStats project={project.statsProject} label={project.statsLabel} />
+                       </div>
+                     ) : (
                        <div className="relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
                          {project.video ? (
                            <ProjectVideo src={project.video} thumbnail={project.thumbnail} projectLink={project.link} />
@@ -922,79 +939,30 @@ export default function Personal() {
                            <ProjectImageCard thumbnail={project.thumbnail} name={project.name} link={project.link} />
                          )}
                        </div>
-                       {project.date && project.result ? (
-                         <div className="flex items-center gap-2">
-                           <span className="text-xs text-zinc-400 dark:text-zinc-500">{project.date}</span>
-                           <span className="text-zinc-300 dark:text-zinc-700">·</span>
-                           <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide ${
-                             project.result.toLowerCase().includes('funded')
-                               ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
-                               : project.result.toLowerCase().includes('winner') || project.result.toLowerCase().includes('won')
-                                 ? 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400'
-                                 : project.result.toLowerCase().includes('2nd') || project.result.toLowerCase().includes('place')
-                                   ? 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
-                                   : 'bg-zinc-500/10 text-zinc-600 dark:bg-zinc-500/20 dark:text-zinc-400'
-                           }`}>{project.result}</span>
-                         </div>
-                       ) : null}
-                       <div className="flex items-center gap-3 pt-0.5">
+                     )}
+
+                     <div className="flex flex-wrap items-center justify-between gap-3 pt-0.5">
+                       <div className="flex flex-wrap items-center gap-3">
                          {project.link ? (
                            <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors">
-                             <LinkIcon className="h-3 w-3" />
-                             Try it
+                             <LinkIcon className="h-3 w-3" />Try it
                            </a>
                          ) : null}
                          {project.video && isYoutube(project.video) ? (
                            <a href={project.video} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 transition-colors">
-                             <Youtube className="h-3 w-3" />
-                             Watch demo
+                             <Youtube className="h-3 w-3" />Watch demo
                            </a>
                          ) : null}
                          {project.details ? (
-                           <NextLink href={project.details} className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400 transition-colors">
-                             <BookOpen className="h-3 w-3" />
-                             How it's built
+                           <NextLink href={project.details} className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors">
+                             <BookOpen className="h-3 w-3" />How it&apos;s built
                            </NextLink>
                          ) : null}
+                         {project.result ? <ResultBadge result={project.result} /> : null}
                        </div>
                        <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
                      </div>
-
-                     {/* Right — name, description, stat */}
-                     <div className="flex flex-col gap-3 pt-0.5">
-                       <div className="space-y-1.5">
-                         <div className="flex items-center gap-2">
-                           {project.link ? (
-                             <a className="group/link relative inline-block font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors" href={project.link} target="_blank" rel="noopener noreferrer">
-                               {project.name}
-                               <span className="absolute -bottom-0.5 left-0 block h-px w-full max-w-0 bg-current transition-all duration-300 group-hover/link:max-w-full" />
-                             </a>
-                           ) : (
-                             <span className="font-semibold text-zinc-900 dark:text-zinc-100">{project.name}</span>
-                           )}
-                           {project.video && isYoutube(project.video) ? (
-                             <a href={project.video} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${project.name} on YouTube`} className="group/yt inline-flex items-center gap-1 overflow-hidden rounded-full bg-red-50 px-1.5 py-0.5 text-red-500 transition-all duration-300 hover:bg-red-100 hover:px-2.5 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20">
-                               <Youtube className="h-3.5 w-3.5 shrink-0" />
-                               <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/yt:max-w-[5rem]">Watch demo</span>
-                             </a>
-                           ) : null}
-                           {(project.repo || isGithub(project.link)) ? (
-                             <a href={project.repo || project.link} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.name} on GitHub`} className="group/gh inline-flex items-center gap-1 overflow-hidden rounded-full bg-zinc-100 px-1.5 py-0.5 text-zinc-500 transition-all duration-300 hover:bg-zinc-200 hover:px-2.5 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700">
-                               <GithubIcon className="h-3.5 w-3.5 shrink-0" />
-                               <span className="max-w-0 overflow-hidden whitespace-nowrap text-[0.7rem] font-medium transition-all duration-300 group-hover/gh:max-w-[4rem]">GitHub</span>
-                             </a>
-                           ) : null}
-                         </div>
-                         <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">{project.description}</p>
-                       </div>
-
-                      {project.id === 'project-img-crafter' && (
-                        <div className="mt-auto">
-                          <CustomersStats />
-                        </div>
-                      )}
-                     </div>
-                   </div>{/* end desktop grid */}
+                   </div>
                  </motion.div>
                ))}
              </motion.div>
@@ -1094,36 +1062,36 @@ export default function Personal() {
                       ) : null}
                     </div>
 
-                    {/* Tags */}
-                     <TagPills
-                       tags={project.tags}
-                       onTagClick={toggleTag}
-                       activeTag={selectedTag}
-                     />
-                    
-                    {/* Date + Result badge */}
-                    {project.date && project.result ? (
-                      <div className="flex items-center gap-2 pt-1">
-                        <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                          {project.date}
-                        </span>
-                        <span className="text-zinc-200 dark:text-zinc-700">·</span>
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide ${
-                            project.result.toLowerCase().includes('winner') ||
-                            project.result.toLowerCase().includes('won')
-                              ? 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400'
-                              : project.result.toLowerCase().includes('funded')
-                                ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
-                                : project.result.toLowerCase().includes('2nd') ||
-                                    project.result.toLowerCase().includes('place')
-                                  ? 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
-                                  : 'bg-zinc-500/10 text-zinc-600 dark:bg-zinc-500/20 dark:text-zinc-400'
-                          }`}
-                        >
-                          {project.result}
-                        </span>
-                      </div>
+                    {project.result ? (
+                      <>
+                        {/* Winning: date · place — tags on their own line below */}
+                        <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                          {project.date ? (
+                            <span className="text-xs text-zinc-400 dark:text-zinc-500">{project.date}</span>
+                          ) : null}
+                          {project.date ? <span className="text-zinc-300 dark:text-zinc-700">·</span> : null}
+                          <ResultBadge result={project.result} />
+                        </div>
+                        <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
+                      </>
+                    ) : (project.date || project.tags?.length) ? (
+                      /* Non-winning: date · tags inline */
+                      <TagPills
+                        tags={project.tags}
+                        onTagClick={toggleTag}
+                        activeTag={selectedTag}
+                        className="pt-0.5"
+                        leading={
+                          project.date ? (
+                            <>
+                              <span className="text-xs text-zinc-400 dark:text-zinc-500">{project.date}</span>
+                              {project.tags?.length ? (
+                                <span className="text-zinc-300 dark:text-zinc-700">·</span>
+                              ) : null}
+                            </>
+                          ) : null
+                        }
+                      />
                     ) : null}
                     
                     {/* Description */}

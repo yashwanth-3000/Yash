@@ -39,3 +39,4 @@ Thumbs.db
 # Cache files
 .cache/
 
+.vercel
