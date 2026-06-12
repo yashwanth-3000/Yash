@@ -408,7 +408,7 @@ function TagPills({
  * Achievement badge — trophy/medal/check icon + clean pill.
  * Red accent for top results (winner / 1st / funded / best), neutral zinc otherwise.
  */
-function ResultBadge({ result }: { result?: string }) {
+function ResultBadge({ result, href }: { result?: string; href?: string }) {
   if (!result) return null
   const r = result.toLowerCase()
   const isTop =
@@ -427,7 +427,7 @@ function ResultBadge({ result }: { result?: string }) {
         : r.includes('2nd') || r.includes('3rd') || r.includes('place')
           ? Medal
           : Award
-  return (
+  const badge = (
     <span
       className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-medium ${
         isTop
@@ -438,6 +438,20 @@ function ResultBadge({ result }: { result?: string }) {
       <Icon className="h-2.5 w-2.5 shrink-0" />
       {result}
     </span>
+  )
+
+  if (!href) return badge
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${result} announcement`}
+      className="inline-flex transition-opacity hover:opacity-80"
+    >
+      {badge}
+    </a>
   )
 }
 
@@ -825,7 +839,7 @@ export default function Personal() {
                                <span className="text-xs text-zinc-400 dark:text-zinc-500">{project.date}</span>
                              ) : null}
                              {project.date ? <span className="text-zinc-300 dark:text-zinc-700">·</span> : null}
-                             <ResultBadge result={project.result} />
+                             <ResultBadge result={project.result} href={project.resultLink} />
                            </div>
                            <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
                          </>
@@ -958,7 +972,7 @@ export default function Personal() {
                              <BookOpen className="h-3 w-3" />How it&apos;s built
                            </NextLink>
                          ) : null}
-                         {project.result ? <ResultBadge result={project.result} /> : null}
+                         {project.result ? <ResultBadge result={project.result} href={project.resultLink} /> : null}
                        </div>
                        <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
                      </div>
@@ -1070,7 +1084,7 @@ export default function Personal() {
                             <span className="text-xs text-zinc-400 dark:text-zinc-500">{project.date}</span>
                           ) : null}
                           {project.date ? <span className="text-zinc-300 dark:text-zinc-700">·</span> : null}
-                          <ResultBadge result={project.result} />
+                          <ResultBadge result={project.result} href={project.resultLink} />
                         </div>
                         <TagPills tags={project.tags} onTagClick={toggleTag} activeTag={selectedTag} />
                       </>

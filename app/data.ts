@@ -19,6 +19,7 @@ type Project = {
   /** Optional date/result for hackathons or competitions. */
   date?: string
   result?: string
+  resultLink?: string
   /** Optional link to a blog post or write-up explaining how the project was built. */
   details?: string
   /** Optional GitHub repo link shown as a GitHub icon pill. */
@@ -57,6 +58,8 @@ export const PROJECTS: Project[] = [
     video: 'https://youtu.be/RJMUyunJStk',
     link: 'https://github.com/yashwanth-3000/chatdoc',
     repo: 'https://github.com/yashwanth-3000/chatdoc',
+    result: '3rd Place',
+    resultLink: 'https://www.linkedin.com/posts/mnvsk97_resilient-agents-hackathon-by-truefoundry-share-7470952532501131264-1ROc/',
     description:
       'Guided builder for governed website chatbots on TrueFoundry\'s AI Gateway. Auto-discovers models, MCP servers, and guardrails, adds tiered rate limiting and failover, offers live testing with full request tracing, and generates React widget + Next.js API route code.',
     tags: ['GenAI', 'TrueFoundry', 'MCP'],
