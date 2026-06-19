@@ -4,6 +4,54 @@ import './globals.css'
 import { Footer } from './footer'
 import { ThemeProvider } from 'next-themes'
 import { WEBSITE_URL } from '@/lib/constants'
+import { SOCIAL_LINKS, EMAIL, PRESS } from './data'
+
+// Person + WebSite structured data. This lets Google (and AI search engines)
+// resolve "Yashwanth Krishna" to a single entity backed by his social profiles,
+// which is the strongest lever for ranking on name searches.
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${WEBSITE_URL}/#person`,
+      name: 'Pavushetty Yashwanth Krishna',
+      alternateName: ['Yashwanth Krishna', 'P Yashwanth Krishna'],
+      url: WEBSITE_URL,
+      image: `${WEBSITE_URL}/cover.jpg`,
+      email: `mailto:${EMAIL}`,
+      jobTitle: 'Generative AI Developer',
+      description:
+        'Generative AI Developer based in India building intelligent applications with AI, Machine Learning, RAG, and Computer Vision.',
+      knowsAbout: [
+        'Generative AI',
+        'Machine Learning',
+        'Retrieval-Augmented Generation',
+        'Computer Vision',
+        'Large Language Models',
+        'Full-Stack Development',
+      ],
+      sameAs: [
+        ...SOCIAL_LINKS.map((social) => social.link),
+        'https://medium.com/@yashwanthkrishna169',
+      ],
+      subjectOf: PRESS.map((item) => ({
+        '@type': 'NewsArticle',
+        headline: item.title,
+        url: item.link,
+        publisher: { '@type': 'Organization', name: item.outlet },
+      })),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${WEBSITE_URL}/#website`,
+      url: WEBSITE_URL,
+      name: "Yashwanth Krishna — Portfolio",
+      inLanguage: 'en-US',
+      publisher: { '@id': `${WEBSITE_URL}/#person` },
+    },
+  ],
+}
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -13,7 +61,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(WEBSITE_URL),
-  title: "Yashwanth's Portfolio",
+  title: {
+    default: 'Yashwanth Krishna — Generative AI Developer | Portfolio',
+    template: '%s | Yashwanth Krishna',
+  },
   description:
     'Pavushetty Yashwanth Krishna - Generative AI Developer based in India. Building intelligent applications with AI, Machine Learning, RAG, and cutting-edge technology. Portfolio showcasing projects in GenAI, Computer Vision, and Full-Stack Development.',
   alternates: {
@@ -93,6 +144,12 @@ export default function RootLayout({
       <body
         className={`${geist.variable} ${geistMono.variable} bg-zinc-50 tracking-tight antialiased dark:bg-zinc-950`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(personJsonLd).replace(/</g, '\\u003c'),
+          }}
+        />
         <ThemeProvider
           enableSystem={true}
           attribute="class"

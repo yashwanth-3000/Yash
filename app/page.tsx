@@ -42,6 +42,7 @@ import {
   PROJECTS,
   WORK_EXPERIENCE,
   BLOG_POSTS,
+  PRESS,
   EMAIL,
   SOCIAL_LINKS,
   GITHUB_USERNAME,
@@ -512,6 +513,12 @@ export default function Personal() {
         jobTitle: 'Generative AI Developer',
         email: `mailto:${EMAIL}`,
         sameAs: SOCIAL_LINKS.map((link) => link.link),
+        subjectOf: PRESS.map((item) => ({
+          '@type': 'NewsArticle',
+          headline: item.title,
+          url: item.link,
+          publisher: { '@type': 'Organization', name: item.outlet },
+        })),
       },
       ...PROJECTS.map((project) => ({
         '@type': 'CreativeWork',
@@ -1203,6 +1210,52 @@ export default function Personal() {
             ))}
           </div>
         </motion.section>
+
+        {/* Press / In the news Section */}
+        {PRESS.length ? (
+          <motion.section
+            variants={VARIANTS_SECTION}
+            transition={TRANSITION_SECTION}
+          >
+            <h3 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-100">In the news</h3>
+            <div className="flex flex-col divide-y divide-zinc-100 dark:divide-zinc-800/50">
+              {PRESS.map((item, index) => (
+                <motion.a
+                  key={item.uid}
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: index * 0.08, duration: 0.4 }}
+                  className="group flex items-start justify-between gap-4 py-4 -mx-2 px-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors duration-200"
+                >
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center rounded-md bg-zinc-100/80 px-2 py-0.5 text-[10px] font-medium text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400">
+                        {item.outlet}
+                      </span>
+                      {item.date ? (
+                        <span className="text-xs text-zinc-400 dark:text-zinc-500">{item.date}</span>
+                      ) : null}
+                    </div>
+                    <h4 className="font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors line-clamp-2">
+                      {item.title}
+                    </h4>
+                  </div>
+                  <svg
+                    className="shrink-0 h-4 w-4 mt-1 text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7v10" />
+                  </svg>
+                </motion.a>
+              ))}
+            </div>
+          </motion.section>
+        ) : null}
 
         {/* Connect Section */}
         <motion.section

@@ -48,6 +48,17 @@ type SocialLink = {
   link: string
 }
 
+type PressMention = {
+  /** Publication name, e.g. "The Hindu". */
+  outlet: string
+  /** Article headline. */
+  title: string
+  link: string
+  /** Optional publication date, e.g. "Jun 2026". */
+  date?: string
+  uid: string
+}
+
 export const PROJECTS: Project[] = [
 
 
@@ -242,6 +253,22 @@ export const BLOG_POSTS: BlogPost[] = [
     description: 'Walkthrough of how Kisan was built on Google Cloud Run, covering architecture, deployment, and scalable AI access for farmers.',
     link: 'https://medium.com/@yashwanthkrishna169/building-kisan-how-we-used-google-cloud-run-to-bring-ai-closer-to-farmers-a1255f2cdac2',
     uid: 'blog-1',
+  },
+]
+
+export const PRESS: PressMention[] = [
+  {
+    outlet: 'The Hindu',
+    title: 'Warangal student wins top honours at international hackathon',
+    link: 'https://www.thehindu.com/news/national/telangana/warangal-student-wins-top-honours-at-international-hackathon/article70837760.ece',
+    uid: 'press-the-hindu-international-hackathon',
+  },
+  {
+    outlet: 'The Hindu',
+    title:
+      'Warangal students win $5,000 in prestigious generative AI hackathon',
+    link: 'https://www.thehindu.com/news/national/telangana/warangal-students-win-5000-in-prestigious-generative-ai-hackathon/article69709364.ece',
+    uid: 'press-the-hindu-genai-hackathon',
   },
 ]
 

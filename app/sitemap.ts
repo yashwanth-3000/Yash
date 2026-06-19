@@ -15,8 +15,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
-    url: post.link.startsWith('http') ? post.link : `${base}${post.link}`,
+  // Only include posts hosted on this domain. External write-ups (e.g. Medium)
+  // live on another domain and must not be in this sitemap - Google flags
+  // cross-domain entries and those sites handle their own indexing.
+  const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.filter(
+    (post) => !post.link.startsWith('http'),
+  ).map((post) => ({
+    url: `${base}${post.link}`,
     lastModified: now,
     changeFrequency: 'monthly',
     priority: 0.7,
