@@ -470,7 +470,7 @@ export default function Personal() {
     { id: 'tldr' as const, label: 'TL;DR', icon: List },
     { id: 'timeline' as const, label: 'Timeline', icon: Calendar },
   ]
-  const lp = 'font-medium underline underline-offset-2 decoration-zinc-400 dark:decoration-zinc-600 hover:decoration-zinc-700 dark:hover:decoration-zinc-300 transition-colors'
+  const lp = 'font-medium underline underline-offset-2 decoration-red-500 hover:decoration-red-600 transition-colors'
   const timelineItems: { year: string; title: string; content: React.ReactNode }[] = [
     {
       year: '10th Grade',
@@ -647,33 +647,34 @@ export default function Personal() {
 <div className="relative">
               {/* Story */}
               <div className={`space-y-5 text-[0.95rem] leading-[1.75] text-zinc-800 dark:text-zinc-100 sm:text-[1rem] transition-opacity duration-150 ${introView === 'story' ? 'block' : 'hidden'}`}>
-                  <p>I&apos;m a Generative AI developer who likes building things that actually get used. I spend most of my time working with models, experimenting with ideas, and figuring out how to turn &ldquo;this would be cool&rdquo; into something real and reliable.</p>
+                  <p>I am Yash, and I spend most of my time working with models, experimenting with ideas, and figuring out how to turn &ldquo;this would be cool&rdquo; into something real and reliable.</p>
                   <p>I love taking part in{' '}
-                    <LinkPreview url="https://devpost.com/yashwanth-3000" isStatic imageSrc="https://i.imgur.com/6OkzN1M.png" className="font-medium underline underline-offset-2 decoration-zinc-400 dark:decoration-zinc-600 hover:decoration-zinc-700 dark:hover:decoration-zinc-300 transition-colors">hackathons</LinkPreview>.
+                    <LinkPreview url="https://devpost.com/yashwanth-3000" isStatic imageSrc="https://i.imgur.com/6OkzN1M.png" className="font-medium underline underline-offset-2 decoration-red-500 hover:decoration-red-600 transition-colors">hackathons</LinkPreview>.
                     {' '}They&apos;ve pushed me to switch tech stacks quickly, learn new tools on the fly, and adapt to different workflows. I think that&apos;s helped me grow a lot as a developer.</p>
                   <p>I&apos;ve always enjoyed creating things beyond just code. In 10th grade, I started helping my dad with his{' '}
-                    <LinkPreview url="https://www.youtube.com/@PavushettyYashwanth" isStatic imageSrc="https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg" className="font-medium underline underline-offset-2 decoration-zinc-400 dark:decoration-zinc-600 hover:decoration-zinc-700 dark:hover:decoration-zinc-300 transition-colors">YouTube channel</LinkPreview>,
+                    <LinkPreview url="https://www.youtube.com/@PavushettyYashwanth" isStatic imageSrc="https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg" className="font-medium no-underline transition-colors">YouTube channel</LinkPreview>,
                     {' '}mostly editing and thinking through content. It taught me that clarity and intention matter, whether you&apos;re making a video or building a product.</p>
-                  <p>Most of the things I build start with a personal itch. When I switched from Android to iOS, I really missed the Google Calendar widget I used every day. So instead of just complaining about it, I started building my own calendar widget app, one that brings useful widgets to iPhone.</p>
+                  <p>Most of the things I build start with a personal itch. When I switched from Android to iOS, I really missed the Google Calendar widget I used every day. So instead of just complaining about it, I started building my own{' '}
+                    <LinkPreview url="https://monthlycalenderwidgets.com" className="font-medium underline underline-offset-2 decoration-red-500 hover:decoration-red-600 transition-colors">calendar widget app</LinkPreview>, one that brings useful widgets to iPhone.</p>
                   <p>Most of the time, I build things I genuinely wish already existed.</p>
               </div>
 
               {/* TL;DR — stays mounted so Struck animations play once and stay */}
               <div className={`space-y-5 text-[0.95rem] leading-[1.75] text-zinc-800 dark:text-zinc-100 sm:text-[1rem] ${introView === 'tldr' ? 'block' : 'hidden'}`}>
                   <p>
-                    <Highlight delay={0.0}>I&apos;m a Generative AI developer who likes building things that actually get used.</Highlight>{' '}
+                    <Highlight delay={0.0}>I am Yash.</Highlight>{' '}
                     <Struck play={tldrActivated} strikeDelay={0.4}>I spend most of my time working with models, experimenting with ideas, and figuring out how to turn &ldquo;this would be cool&rdquo; into something real and reliable.</Struck>
                   </p>
                   <p>
                     <Highlight delay={0.55}>I love taking part in{' '}
-                    <LinkPreview url="https://devpost.com/yashwanth-3000" isStatic imageSrc="https://i.imgur.com/6OkzN1M.png" className="font-medium underline underline-offset-2 decoration-zinc-600 hover:decoration-zinc-800 transition-colors">hackathons</LinkPreview>.</Highlight>{' '}
+                    <LinkPreview url="https://devpost.com/yashwanth-3000" isStatic imageSrc="https://i.imgur.com/6OkzN1M.png" className="font-medium underline underline-offset-2 decoration-red-500 hover:decoration-red-600 transition-colors">hackathons</LinkPreview>.</Highlight>{' '}
                     <Highlight delay={0.75}>pushed me to switch tech stacks quickly, learn new tools on the fly, and adapt to different workflows.</Highlight>{' '}
                     <Struck play={tldrActivated} strikeDelay={1.0}>I think that&apos;s helped me grow a lot as a developer.</Struck>
                   </p>
                   <p>
                     <Struck play={tldrActivated} strikeDelay={1.15}>I&apos;ve always enjoyed creating things beyond just code. In 10th grade,</Struck>{' '}
                     <Highlight delay={1.2}>started helping my dad with his{' '}
-                    <LinkPreview url="https://www.youtube.com/@PavushettyYashwanth" isStatic imageSrc="https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg" className="font-medium underline underline-offset-2 decoration-zinc-600 hover:decoration-zinc-800 transition-colors">YouTube channel</LinkPreview></Highlight>.{' '}
+                    <LinkPreview url="https://www.youtube.com/@PavushettyYashwanth" isStatic imageSrc="https://i.ibb.co/v4Vj2ppw/imgggkisan.jpg" className="font-medium no-underline transition-colors">YouTube channel</LinkPreview></Highlight>.{' '}
                     <Struck play={tldrActivated} strikeDelay={1.45}>mostly editing and thinking through content.</Struck>{' '}
                     <Highlight delay={1.5}>It taught me that clarity and intention matter.</Highlight>{' '}
                     <Struck play={tldrActivated} strikeDelay={1.75}>whether you&apos;re making a video or building a product.</Struck>
@@ -681,7 +682,8 @@ export default function Personal() {
                   <p>
                     <Highlight delay={1.8}>Most of the things I build start with a personal itch.</Highlight>{' '}
                     <Struck play={tldrActivated} strikeDelay={2.0}>When I switched from Android to iOS, I really missed the Google Calendar widget I used every day. So instead of just complaining about it,</Struck>{' '}
-                    <Highlight delay={2.1}>I started building my own calendar widget app, one that brings useful widgets to iPhone.</Highlight>
+                    <Highlight delay={2.1}>I started building my own{' '}
+                    <LinkPreview url="https://monthlycalenderwidgets.com" className="font-medium underline underline-offset-2 decoration-red-500 hover:decoration-red-600 transition-colors">calendar widget app</LinkPreview>, one that brings useful widgets to iPhone.</Highlight>
                   </p>
                   <p><Highlight delay={2.4}>Most of the time, I build things I genuinely wish already existed.</Highlight></p>
               </div>
